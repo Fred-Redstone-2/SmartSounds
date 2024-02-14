@@ -9,6 +9,8 @@ import mingus.core.chords as chords
 
 from resources import directory
 
+
+
 print(notes.is_valid_note('C'))
 
 note = diatonic.get_notes("C")
