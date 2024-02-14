@@ -13,7 +13,6 @@ print(notes.is_valid_note('C'))
 
 note = diatonic.get_notes("C")
 
-
 print(intervals.third("C", "C"))
 
 print(intervals.determine("E", "A", True))
