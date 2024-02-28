@@ -1,6 +1,0 @@
-% Produce font files at specified size.
-
-design_size := 17.82;
-
-input feta-flags-generic;
-end.

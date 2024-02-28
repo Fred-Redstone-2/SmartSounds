@@ -1,6 +1,0 @@
-% Produce font files at specified size.
-
-design_size := 25.20;
-
-input parmesan-other-generic;
-end.
