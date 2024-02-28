@@ -32,6 +32,7 @@ class Main:
     b = Bar()
     b + "C"
     bar = LilyPond.from_Bar(b)
+    LilyPond.to_pdf(bar, "part1")
     midi = "song.midi"
     midi_file_out.write_Bar(midi, b)
     ConvertisseurMidi.convertir_midi(midi, soundFont, "song.wav")
