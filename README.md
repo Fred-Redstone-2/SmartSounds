@@ -5,8 +5,10 @@
 
 <div align='left'>
 
-  # Installation
-  1. Installer python à partir du [site officiel](https://www.python.org/downloads/)
-  2. Ouvrir CMD (en utilisateur), exécuter *pip install mingus fluidsynth* et laisser télécharger
-  3. Aller dans votre dossier d'installation de Python (par défaut : *C:\Users\\(Nom d'utilisateur)\AppData\Local\Programs\Python\PythonXXX*) et aller dans le dossier *Lib\site-packages\mingus\midi* et remplacer le fichier *pyfluidsynth.py* par celui téléchargeable depuis ce projet
-  4. Vous pouvez lancer le code!
+  # Installation Windows
+  1. Installer lilypond à partir du [site officiel](https://gitlab.com/lilypond/lilypond/-/releases/v2.24.3/downloads/lilypond-2.24.3-mingw-x86_64.zip)
+  2. Extraire le fichier à un certain endroit (vous ne pourrez PAS le déplacer par la suite) et ajouter le dossier endroit\lilypond-2.24.3\bin à votre $PATH
+  3. Télécharger la [plus récente version du programme](https://github.com/Fred-Redstone-2/SmartSounds/releases)
+  4. Extraire le fichier à un certain endroit, vous ne pourrez PAS déplacer le dossier résultant par la suite!
+  5. Ajouter le dossier endroit\d'extraction\SmartSounds\\_internal\resources à votre $PATH
+  6. Vous pouvez lancer le code par le fichier SmartSounds.exe ! (Faites attention en déplaçant ce fichier, des problèmes peuvent survenir)
