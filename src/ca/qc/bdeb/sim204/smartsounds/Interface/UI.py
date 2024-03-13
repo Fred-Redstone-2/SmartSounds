@@ -3,9 +3,6 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 
-
-
-
 root = tk.Tk()
 root.title('Séquence Sonore')
 root.configure(bg="light blue")
@@ -15,7 +12,6 @@ root.geometry("%dx%d" % (width, height))
 
 canvas = tk.Canvas(root, width=(width / 2), height=height - 300, bg='white')
 canvas.place(x=50, y=50)
-
 
 
 # Tonalité Label
@@ -30,7 +26,6 @@ tonalite = tkinter.ttk.Combobox(
     width=6,
     textvariable=n,
     font=("Eras Demi ITC", 32)
-
 )
 
 tonalite['values'] = ('Do',
@@ -58,7 +53,7 @@ majeurOuMineur = tkinter.ttk.Combobox(
     textvariable=n2,
     font=("Eras Demi ITC", 32)
 )
-majeurOuMineur['values'] =('Maj',
+majeurOuMineur['values'] = ('Maj',
                            'Min')
 majeurOuMineur['state'] = 'readonly'
 majeurOuMineur.place(x=650, y=150)
@@ -66,24 +61,21 @@ majeurOuMineur.current(0)
 
 def tonalite_change(event):
     if "Ré♭" in n.get() :
-        majeurOuMineur['values'] = ('Maj')
+        majeurOuMineur['values'] = 'Maj'
         majeurOuMineur.current(0)
 
     elif "Fa♯" in n.get() :
-        majeurOuMineur['values'] = ('Min')
+        majeurOuMineur['values'] = 'Min'
         majeurOuMineur.current(0)
 
     elif "Do♯" in n.get() :
-        majeurOuMineur['values'] = ('Min')
+        majeurOuMineur['values'] = 'Min'
         majeurOuMineur.current(0)
 
     elif "Sol♭" in n.get() :
-        majeurOuMineur['values'] = ('Maj')
+        majeurOuMineur['values'] = 'Maj'
         majeurOuMineur.current(0)
 
-    else :
-        majeurOuMineur['values'] = ("Maj",
-                                    "Min")
 
 tonalite.bind('<<ComboboxSelected>>', tonalite_change)
 
@@ -154,7 +146,7 @@ duree.current(0)
 
 # Bouton GENERER
 
-imgGen = PhotoImage(file = r"C:\Users\2236975\Downloads\SmartSounds\src\ca\qc\bdeb\sim204\smartsounds\Interface\U+266B_a.svg (1).png")
+imgGen = PhotoImage(file = "U+266B_a.svg (1).png")
 
 btnGenerer = tk.Button(
     root,
@@ -170,7 +162,7 @@ btnGenerer.place(x = 150, y = 775)
 
 # Button Exporter
 
-imgExpo = PhotoImage(file= r"C:\Users\2236975\Downloads\SmartSounds\src\ca\qc\bdeb\sim204\smartsounds\Interface\expo-ezgif.com-webp-to-png-converter.png")
+imgExpo = PhotoImage(file= "expo-ezgif.com-webp-to-png-converter.png")
 
 btnExporter = tk.Button(
     root,
@@ -181,7 +173,7 @@ btnExporter = tk.Button(
 btnExporter.place(x = 700, y = 775)
 
 # Affichage de la partition
-partition = PhotoImage(file = r"C:\Users\2236975\Downloads\SmartSounds\src\ca\qc\bdeb\sim204\smartsounds\Interface\O_Canada_sheet_music.png")
+partition = PhotoImage(file = "O_Canada_sheet_music.png")
 imgPart = ttk.Label(
     root,
     image=partition,
@@ -190,7 +182,7 @@ imgPart = ttk.Label(
 imgPart.place(x = 1200, y = 50)
 
 # Bouton Jouer
-jouer = PhotoImage(file=r"C:\Users\2236975\Downloads\SmartSounds\src\ca\qc\bdeb\sim204\smartsounds\Interface\play-button-6 (1).png")
+jouer = PhotoImage(file="play-button-6 (1).png")
 btnJouer = Button(
     root,
     image=jouer,
