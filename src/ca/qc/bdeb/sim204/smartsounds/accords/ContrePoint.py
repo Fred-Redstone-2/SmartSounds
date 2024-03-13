@@ -1,4 +1,3 @@
-import mingus.core.intervals as intervals
 import mingus.containers.note as notes
 import ProgressionAccords
 import Rythme

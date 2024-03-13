@@ -10,20 +10,21 @@ class Rythme:
     mesure = ()
 
     def __init__(self, mesure_utilisateur):
-        if mesure_utilisateur is None:
+        if mesure_utilisateur not in self.choix_mesure:
             self.mesure = random.choice(self.choix_mesure)
         else:
             self.mesure = mesure_utilisateur
 
     # generer durée des notes par mesure
-    def genererRythme(self):
+    def generer_rythme(self):
         i = 0
         while i < self.mesure[0]:
             choix = random.choice(self.choix_notes)
             i += choix
-            if i > 4:
+
+            if i > self.mesure[0]:
                 i -= choix
             else:
                 self.list_duree_note.append(choix)
 
-        print("Class: Rythme; list_duree_note: ",self.list_duree_note)
+        print("Class Rythme; list_duree_note: ", self.list_duree_note)

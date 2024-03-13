@@ -25,7 +25,7 @@ class Accord:
     def genererAccord (self):
         # majeur
         tonique = chords.I(self.tonalite)
-        self.progression_accord_debut = [tonique, chords.first_inversion(tonique), chords.second_inversion(tonique)]
+        self.progression_accord_debut = [tonique]
         for i in chords.triads(self.tonalite):
             self.progression_accord_milieu.append(i)
         self.progression_accord_fin= [chords.V7(self.tonalite), tonique]
@@ -40,7 +40,6 @@ class Accord:
             progression_accord_milieu_min.append(i)
         progression_accord_fin_min = [chords.V7(tonalite_mineure), tonique]
         print(progression_accord_debut_min)
-
 '''
 
 
