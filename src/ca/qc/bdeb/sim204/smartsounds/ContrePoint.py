@@ -1,18 +1,31 @@
-import Melody
+import mingus.core.intervals as intervals
+import mingus.containers.note as notes
 import ProgressionAccords
 import Rythme
-import mingus.core.intervals as intervals
-#plus l'instant, il n'y a pas de saut plus grand qu'un octave dans cantus firmus généré( limite de'un octave)
+import random
+
+#plus l'instant, il n'y a pas de saut plus grand qu'un octave dans cantus firmus généré( limite d'un octave)
 '''
-1.Pas de notes répétées dans le cantus firmus (une répétition autorisée en première espèce). 
+1.Pas de notes répétées dans le cantus firmus (accepter 2 répétition). 
 2. Pas de sauts d’une octave ou plus. 
 3. Pas de sauts dissonants. 
 4. Entre deux et quatre sauts au total. 
-5. Possède un point culminant (note la plus haute) qui n’est pas la tonique ou la sensible. 
-6. Change de direction au moins deux fois. 
-7. Aucune note répétée plus de 3 fois. 
+/5. Possède un point culminant (note la plus haute) qui n’est pas la tonique ou la sensible. 
+/6. Change de direction au moins deux fois. 
+/7. Aucune note répétée plus de 3 fois. 
 8. La note finale est approchée par un pas (pas un saut)
-9.les sauts plus grands que M3 doivent être suivis d'un changement de direction
+/9.les sauts plus grands que M3 doivent être suivis d'un changement de direction 
+        *** si a note après et M2/m2 dans la même direction, changer après cela,
+         sinon, changer de direction. 
+         si c'est M3/m3, pas obligé de changer direction 
+10. ( ++ M7/m7 --> M2/m2)
+/La sensible(leadingTone) doit toujours être suivie de la tonique.
+/Pas plus de deux sauts consécutifs dans la même direction.   ***
+/Le même intervalle ne peut pas se produire deux fois de suite.
+/Pas de “noodling” (c’est-à-dire des motifs tels que N1 N2 N1 N2, pour certaines notes N1 et N2). ***
+/Pas de séquences de plus de quatre notes consécutives.
+/Pas de tension mélodique non résolue (c’est-à-dire que la note de départ et la note de fin de chaque séquence doivent être consonantes ensemble).
+/Pas de motifs de trois notes répétés. 
 '''
 
 
@@ -20,9 +33,9 @@ class ContrePoint:
     P1 = C = I = Tonic = Unison = 0
     m2 = Db = ii = 1
     M2 = D = II = Step = 2
-    m3 = Eb = iii = 3
+    m3 = Eb = iii = Skip = 3
     M3 = E = III = 4
-    P4 = F = IV = 5
+    P4 = F = IV = Leap = 5 #leap = P4, d5, P5, m6, M6
     d5 = Gb = Vo = Tritone = 6
     P5 = G = V = 7
     m6 = Ab = vi = 8
@@ -42,22 +55,24 @@ class ContrePoint:
         self.progression = ProgressionAccords.ProgressionAccords(nombre_mesure, tonalite)
 
     def verifier_melodie(self, verbose=False):
-
         print("class ContrePoint, method verifier_melodie: ", self.progression.progression)
 
+        s = "-3" #initialiser octave au centre
         for i in self.progression.progression:
-            self.list_notes.append(i[0])
+            self.list_notes.append(random.choice(i)+s)
+        self.list_notes[-2] = self.progression.progression[-2][1]+s or self.progression.progression[-2][2]+s
+        self.list_notes[-1] = self.progression.progression[-1][0]+s #tonique
         print("list_note: ", self.list_notes)
 
-        self.list_intervals = [intervals.measure(self.list_notes[i], self.list_notes[i + 1]) for i in
+        self.list_intervals = [notes.Note(self.list_notes[i]).measure(notes.Note(self.list_notes[i + 1])) for i in
                                range(len(self.list_notes) - 1)]
         print("list_intervals: ", self.list_intervals)
 
-        self.leaps = [i for i in self.list_intervals if i > self.Step]
+        self.leaps = [i for i in self.list_intervals if abs(i) > self.Leap]
         print("leaps: ", self.leaps)
 
         def pas_de_repetition():
-            if 0 not in self.list_intervals: #vérifier s'il y a de répétition
+            if self.list_intervals.count(0) <=2: #accepter 2 répétition
                  return True
             else:
                 if verbose is False:
@@ -78,8 +93,29 @@ class ContrePoint:
                 if verbose is False:
                     print("échec: pas d'intervals dissonants")
 
+        def entre_deux_et_quatre_sauts():
+            if len(self.leaps) in [2, 3, 4]:
+                return True
+            else:
+                if verbose is False:
+                    print("échec: trop ou pas assez de sauts")
+
+        def note_finale_aprochee_par_pas():
+            if notes.Note(self.list_notes[-1]).measure(notes.Note(self.list_notes[-2])) >= self.Step:
+                return True
+            else:
+                if verbose is False:
+                    print("échec: la note finale approchée par saut")
+
+        # M7, m7 --> m2, M2
+        # -10 --> +2, -11 --> +1
+
         pas_de_repetition()
         pas_de_sauts_plus_grand_que_octave()
         pas_intervals_dissonants()
+        entre_deux_et_quatre_sauts()
+        note_finale_aprochee_par_pas()
+       # sauts_trop_large_changer_de_direction()
+
 
 
