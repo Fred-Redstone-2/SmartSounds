@@ -6,8 +6,9 @@ from tkinter import ttk
 root = tk.Tk()
 root.title('Séquence Sonore')
 root.configure(bg="light blue")
-width = root.winfo_screenwidth()
-height = root.winfo_screenheight() - 100
+width = 0.90*1920
+height = 0.90*1020
+root.resizable(False, False)
 root.geometry("%dx%d" % (width, height))
 
 canvas = tk.Canvas(root, width=(width / 2), height=height - 300, bg='white')
@@ -158,7 +159,7 @@ btnGenerer = tk.Button(
     image = imgGen,
     compound=tk.LEFT
 )
-btnGenerer.place(x = 150, y = 775)
+btnGenerer.place(x = 150, y = 700)
 
 # Button Exporter
 
@@ -170,7 +171,7 @@ btnExporter = tk.Button(
     width = 150,
     height=150
 )
-btnExporter.place(x = 700, y = 775)
+btnExporter.place(x = 700, y = 700)
 
 # Affichage de la partition
 partition = PhotoImage(file = "O_Canada_sheet_music.png")
@@ -179,7 +180,7 @@ imgPart = ttk.Label(
     image=partition,
     padding=5
 )
-imgPart.place(x = 1200, y = 50)
+imgPart.place(x = 1100, y = 25)
 
 # Bouton Jouer
 jouer = PhotoImage(file="play-button-6 (1).png")
@@ -189,6 +190,6 @@ btnJouer = Button(
     height = 100,
     width= 100
 )
-btnJouer.place(x = 1400, y = 810)
+btnJouer.place(x = 1300, y = 785)
 
 root.mainloop()
