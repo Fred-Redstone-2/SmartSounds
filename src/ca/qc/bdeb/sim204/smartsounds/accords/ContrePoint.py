@@ -2,8 +2,10 @@ import mingus.containers.note as notes
 import ProgressionAccords
 import Rythme
 import random
+from mingus.core import notes as Core_Notes
 
-#plus l'instant, il n'y a pas de saut plus grand qu'un octave dans cantus firmus généré( limite d'un octave)
+# plus l'instant, il n'y a pas de saut plus grand qu'un octave dans cantus firmus généré( limite d'un octave)
+# revoir tranpose() in #10
 '''
 1.Pas de notes répétées dans le cantus firmus (accepter 2 répétition). 
 2. Pas de sauts d’une octave ou plus. 
@@ -34,7 +36,7 @@ class ContrePoint:
     M2 = D = II = Step = 2
     m3 = Eb = iii = Skip = 3
     M3 = E = III = 4
-    P4 = F = IV = Leap = 5 #leap = P4, d5, P5, m6, M6
+    P4 = F = IV = Leap = 5  # leap = P4, d5, P5, m6, M6
     d5 = Gb = Vo = Tritone = 6
     P5 = G = V = 7
     m6 = Ab = vi = 8
@@ -56,11 +58,11 @@ class ContrePoint:
     def verifier_melodie(self, verbose=False):
         print("class ContrePoint, method verifier_melodie: ", self.progression.progression)
 
-        s = "-3" #initialiser octave au centre
+        s = "-3"  # initialiser octave au centre
         for i in self.progression.progression:
-            self.list_notes.append(random.choice(i)+s)
-        self.list_notes[-2] = self.progression.progression[-2][1]+s or self.progression.progression[-2][2]+s
-        self.list_notes[-1] = self.progression.progression[-1][0]+s #tonique
+            self.list_notes.append(random.choice(i) + s)
+        self.list_notes[-2] = self.progression.progression[-2][1] + s or self.progression.progression[-2][2] + s
+        self.list_notes[-1] = self.progression.progression[-1][0] + s  # tonique
         print("list_note: ", self.list_notes)
 
         self.list_intervals = [notes.Note(self.list_notes[i]).measure(notes.Note(self.list_notes[i + 1])) for i in
@@ -71,8 +73,8 @@ class ContrePoint:
         print("leaps: ", self.leaps)
 
         def pas_de_repetition():
-            if self.list_intervals.count(0) <=2: #accepter 2 répétition
-                 return True
+            if self.list_intervals.count(0) <= 2:  # accepter 2 répétition
+                return True
             else:
                 if verbose is False:
                     print("échec: pas de répétition dans cantus firmus")
@@ -85,7 +87,7 @@ class ContrePoint:
                     print("échec: pas de saut plus grand qu'un octave")
 
         def pas_intervals_dissonants():
-            consonants = [self.M3,self.P4,self.P5,self.m6, self.P8] #pour les gammes majeure
+            consonants = [self.M3, self.P4, self.P5, self.m6, self.P8]  # pour les gammes majeure
             if not any([i not in consonants for i in self.leaps]):
                 return True
             else:
@@ -109,12 +111,58 @@ class ContrePoint:
         # M7, m7 --> m2, M2
         # -10 --> +2, -11 --> +1
 
+        def sauts_trop_large_changer_de_direction():
+            tout_verifie = False
+            while tout_verifie is False:
+                self.list_intervals = [notes.Note(self.list_notes[i]).measure(notes.Note(self.list_notes[i + 1])) for i
+                                       in
+                                       range(len(self.list_notes) - 1)]
+                self.leaps = [i for i in self.list_intervals if abs(i) > self.Leap]
+                if not 10 in self.leaps and not -10 in self.leaps and not 11 in self.leaps and not -11 in self.leaps:
+                    tout_verifie = True
+                    print("tout-verifié: ", tout_verifie, "leaps: ", self.leaps)
+
+                else:
+                    print("tout-verifie: ", tout_verifie, "leap: ", self.leaps)
+                    for i in range(len(self.list_intervals) - 1):
+                        print(self.list_intervals[i])
+                        if self.list_intervals[i] == -self.m7:  # augementer un M2 au lieu de diminuer un m7
+                            n = self.list_notes[i]
+                            temp = n[0]
+                            temp = Core_Notes.augment(temp)
+                            temp = Core_Notes.augment(temp)
+                            apres_n = Core_Notes.reduce_accidentals(temp) + "-" + str(int(n[-1]) + 1)
+                            self.list_notes[i + 1] = apres_n
+                            print("apres_n: ", apres_n)
+
+                        elif self.list_intervals[i] == -self.M7:  # augementer un m2 au lieu de diminuer un M7
+                            n = self.list_notes[i]
+                            temp = Core_Notes.augment(n[0])
+                            apres_n = Core_Notes.reduce_accidentals(temp) + "-" + str(int(n[-1]) + 1)
+                            self.list_notes[i + 1] = apres_n
+                            print("apres_n: ", apres_n)
+                        elif self.list_intervals[i] == self.m7:
+                            n = self.list_notes[i]
+                            temp = Core_Notes.diminish(n[0])
+                            temp = Core_Notes.diminish(temp)
+                            apres_n = Core_Notes.reduce_accidentals(temp) + "-" + str(int(n[-1]) - 1)
+                            self.list_notes[i + 1] = apres_n
+                            print("apres_n: ", apres_n)
+                        elif self.list_intervals[i] == self.M7:
+                            n = self.list_notes[i]
+                            temp = Core_Notes.diminish(n[0])
+                            apres_n = Core_Notes.reduce_accidentals(temp) + "-" + str(int(n[-1]) - 1)
+                            self.list_notes[i + 1] = apres_n
+                            print("apres_n: ", apres_n)
+                        else:
+                            print("échec d'analyse")
+                            tout_verifie = True
+                print("list_note après changé: ", self.list_notes)
+
+
         pas_de_repetition()
         pas_de_sauts_plus_grand_que_octave()
         pas_intervals_dissonants()
         entre_deux_et_quatre_sauts()
         note_finale_aprochee_par_pas()
-       # sauts_trop_large_changer_de_direction()
-
-
-
+        sauts_trop_large_changer_de_direction()
