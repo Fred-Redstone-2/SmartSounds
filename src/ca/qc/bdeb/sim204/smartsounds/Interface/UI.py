@@ -2,22 +2,44 @@ import tkinter
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
+from PIL import Image, ImageTk
+
+base_width = 1728
+base_height = 918
 
 root = tk.Tk()
 root.title('Séquence Sonore')
 root.configure(bg="light blue")
-width = 0.90*1920
-height = 0.90*1020
+
+multiplicateurX = root.winfo_screenwidth() / base_width
+multiplicateurY = root.winfo_screenheight() / base_height
+espacementX = 50 * multiplicateurX
+taille_texte = int(35 * multiplicateurX)
+
+width = (base_width - 100) * multiplicateurX
+height = (base_height - 100) * multiplicateurY
 root.resizable(False, False)
 root.geometry("%dx%d" % (width, height))
 
-canvas = tk.Canvas(root, width=(width / 2), height=height - 300, bg='white')
-canvas.place(x=50, y=50)
-
+canvas = tk.Canvas(root, width=(width / 2), height=height - 325 * multiplicateurY, bg='white')
+canvas.place(x=espacementX, y=50 * multiplicateurY)
+root.update()
+canvas.pos_fin = canvas.winfo_x() + canvas.winfo_width()
 
 # Tonalité Label
-textTonalite = tk.Label(root, text="Tonalité :", font=("Eras Demi ITC", 32), bg="white")
-textTonalite.place(x=150, y=150)
+textTonalite = tk.Label(root, text="Tonalité :", font=("Eras Demi ITC", taille_texte), bg="white")
+textTonalite.place(x=canvas.winfo_x() + espacementX, y=canvas.winfo_y() + 50 * multiplicateurY)
+root.update()
+
+# Tempo Label
+textTempo = tk.Label(root, text="Tempo :", font=("Eras Demi ITC", taille_texte), bg="white")
+textTempo.place(x=textTonalite.winfo_x(), y=textTonalite.winfo_y() + textTonalite.winfo_height() + 100 * multiplicateurY)
+root.update()
+
+# Durée Label
+textDuree = tk.Label(root, text="Durée :", font=("Eras Demi ITC", taille_texte), bg="white")
+textDuree.place(x=textTonalite.winfo_x(), y=textTempo.winfo_y() + textTempo.winfo_height() + 100 * multiplicateurY)
+
 
 # Tonalité Combobox
 n = tk.StringVar()
@@ -26,7 +48,7 @@ tonalite = tkinter.ttk.Combobox(
     root,
     width=6,
     textvariable=n,
-    font=("Eras Demi ITC", 32)
+    font=("Eras Demi ITC", taille_texte)
 )
 
 tonalite['values'] = ('Do',
@@ -45,19 +67,22 @@ tonalite['values'] = ('Do',
                       'Si♭'
                       )
 tonalite['state'] = 'readonly'
-tonalite.place(x=450, y=150)
+tonalite.place(x=textTonalite.winfo_x() + textTonalite.winfo_width() + espacementX,
+               y=textTonalite.winfo_y())
 tonalite.current(0)
+root.update()
 
+#Majeur/Mineur Combobox
 majeurOuMineur = tkinter.ttk.Combobox(
     root,
     width=6,
     textvariable=n2,
-    font=("Eras Demi ITC", 32)
+    font=("Eras Demi ITC", taille_texte)
 )
 majeurOuMineur['values'] = ('Maj',
                            'Min')
 majeurOuMineur['state'] = 'readonly'
-majeurOuMineur.place(x=650, y=150)
+majeurOuMineur.place(x=-100, y=-100)
 majeurOuMineur.current(0)
 
 def tonalite_change(event):
@@ -76,18 +101,28 @@ def tonalite_change(event):
     elif "Sol♭" in n.get() :
         majeurOuMineur['values'] = 'Maj'
         majeurOuMineur.current(0)
+    else:
+        majeurOuMineur['values'] = ('Maj', 'Min')
+        majeurOuMineur.current(0)
 
 
 tonalite.bind('<<ComboboxSelected>>', tonalite_change)
 
+# Mesures Combobox
+g = tk.StringVar()
+duree = ttk.Combobox(root, width=15, textvariable=g, font=("Eras Demi ITC", taille_texte))
+duree['values'] = ('4 mesures', '8 mesures', '16 mesures', '32 mesures', '64 mesures')
+duree['state'] = 'readonly'
+duree.place(x=tonalite.winfo_x(), y=textDuree.winfo_y())
+duree.current(0)
+root.update()
 
-# Tempo Label
-textTempo = tk.Label(root, text="Tempo :", font=("Eras Demi ITC", 32), bg="white")
-textTempo.place(x=150, y=350)
+#Ajuster Majeur/Mineur combobox
+majeurOuMineur.place(x=duree.winfo_x() + duree.winfo_width() - majeurOuMineur.winfo_width(),
+                     y=textTonalite.winfo_y())
 
+#BPM Slider
 current_value = tk.IntVar()
-
-
 def get_current_value():
     return '{: .0f}'.format(current_value.get())
 
@@ -95,14 +130,14 @@ def get_current_value():
 value_label = ttk.Label(
     root,
     text=get_current_value(),
-    font=("Eras Demi ITC", 32),
+    font=("Eras Demi ITC", taille_texte),
     background='white'
 )
 
 bpm_label = ttk.Label(
     root,
     text="bpm",
-    font=("Eras Demi ITC", 28),
+    font=("Eras Demi ITC", taille_texte - int(1 * multiplicateurX)),
     background='white'
 )
 
@@ -117,7 +152,7 @@ temposlider = ttk.Scale(
     to=220,
     orient='horizontal',  # vertical
     command=slider_changed,
-    length=440,
+    length=duree.winfo_width(),
     variable=current_value
 )
 temposlider.grid(
@@ -125,71 +160,76 @@ temposlider.grid(
     row=0,
     sticky='we'
 )
+temposlider.set(100)
+root.update()
+
+temposlider.place(x=tonalite.winfo_x(), y=textTempo.winfo_y() + textTempo.winfo_height() - temposlider.winfo_height())
+
+value_label.place(x=-100, y=-100)
+bpm_label.place(x=-100, y=-100)
+root.update()
+
+value_label.place(x=temposlider.winfo_x() + temposlider.winfo_width() / 2 - value_label.winfo_width(), y=temposlider.winfo_y() - value_label.winfo_height())
+bpm_label.place(x=temposlider.winfo_x() + temposlider.winfo_width() / 2, y=temposlider.winfo_y() - value_label.winfo_height())
 temposlider.set(30)
 
-value_label.place(x=540, y=325)
-bpm_label.place(x=630, y=330)
-
-
-temposlider.place(x=425, y=375)
-
-# Durée Label
-textDuree = tk.Label(root, text="Durée :", font=("Eras Demi ITC", 32), bg="white")
-textDuree.place(x=150, y=550)
-
-# Tonalité Combobox
-g = tk.StringVar()
-duree = ttk.Combobox(root, width=15, textvariable=g, font=("Eras Demi ITC", 32))
-duree['values'] = ('4 mesures', '8 mesures', '16 mesures', '32 mesures', '64 mesures')
-duree['state'] = 'readonly'
-duree.place(x=450, y=550)
-duree.current(0)
 
 # Bouton GENERER
-
 imgGen = PhotoImage(file = "U+266B_a.svg (1).png")
 
 btnGenerer = tk.Button(
     root,
     text="Générer",
-    width = 500,
-    height = 150,
-    font=("Informal Roman", 60, 'bold'),
+    width = 400 * multiplicateurX,
+    height = 150 * multiplicateurY,
+    font=("Informal Roman", int(63 * multiplicateurX), 'bold'),
     foreground = 'black',
     image = imgGen,
     compound=tk.LEFT
 )
-btnGenerer.place(x = 150, y = 700)
+btnGenerer.place(x=canvas.winfo_x(), y=canvas.winfo_y() + canvas.winfo_height() + 60 * multiplicateurY)
 
-# Button Exporter
-
+# Bouton Exporter
 imgExpo = PhotoImage(file= "expo-ezgif.com-webp-to-png-converter.png")
 
 btnExporter = tk.Button(
     root,
     image= imgExpo,
-    width = 150,
-    height=150
+    width=150 * multiplicateurX,
+    height=150 * multiplicateurY
 )
-btnExporter.place(x = 700, y = 700)
-
-# Affichage de la partition
-partition = PhotoImage(file = "O_Canada_sheet_music.png")
-imgPart = ttk.Label(
-    root,
-    image=partition,
-    padding=5
-)
-imgPart.place(x = 1100, y = 25)
+btnExporter.place(x=-100, y=-100)
 
 # Bouton Jouer
 jouer = PhotoImage(file="play-button-6 (1).png")
 btnJouer = Button(
     root,
     image=jouer,
-    height = 100,
-    width= 100
+    height = 150 * multiplicateurY,
+    width= 150 * multiplicateurX
 )
-btnJouer.place(x = 1300, y = 785)
+btnJouer.place(x=-100, y=-100)
+root.update()
+btnGenerer.pos_fin = btnGenerer.winfo_x() + btnGenerer.winfo_width()
+
+# Ajustement boutons Jouer et Exporter
+btnJouer.place(x=canvas.pos_fin - btnExporter.winfo_width(),
+               y=btnGenerer.winfo_y())
+root.update()
+btnExporter.place(x=btnGenerer.pos_fin / 2 + btnJouer.winfo_x() / 2 - btnExporter.winfo_width() / 2,
+                  y=btnGenerer.winfo_y())
+
+# Affichage de la partition
+partition_raw = Image.open("O_Canada_sheet_music.png")
+hauteur_part = int(partition_raw.height * multiplicateurY)
+largeur_part = int(partition_raw.width / partition_raw.height * hauteur_part)
+partition_raw = partition_raw.resize((largeur_part, hauteur_part))
+partition = ImageTk.PhotoImage(partition_raw)
+imgPart = ttk.Label(
+    root,
+    image=partition,
+    padding=5
+)
+imgPart.place(x=canvas.pos_fin / 2 + root.winfo_width() / 2 - partition.width() / 2, y=25 * multiplicateurY)
 
 root.mainloop()
