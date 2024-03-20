@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import *
 from tkinter import ttk
 from PIL import Image, ImageTk
+from resources import directory
 
 base_width = 1728
 base_height = 918
@@ -175,7 +176,7 @@ temposlider.set(30)
 
 
 # Bouton GENERER
-imgGen = PhotoImage(file = "U+266B_a.svg (1).png")
+imgGen = PhotoImage(file =f"{directory.ROOT_DIR}/Note_Musique.png")
 
 btnGenerer = tk.Button(
     root,
@@ -190,7 +191,7 @@ btnGenerer = tk.Button(
 btnGenerer.place(x=canvas.winfo_x(), y=canvas.winfo_y() + canvas.winfo_height() + 60 * multiplicateurY)
 
 # Bouton Exporter
-imgExpo = PhotoImage(file= "expo-ezgif.com-webp-to-png-converter.png")
+imgExpo = PhotoImage(file=f"{directory.ROOT_DIR}/Icone_Partager.png")
 
 btnExporter = tk.Button(
     root,
@@ -201,7 +202,7 @@ btnExporter = tk.Button(
 btnExporter.place(x=-100, y=-100)
 
 # Bouton Jouer
-jouer = PhotoImage(file="play-button-6 (1).png")
+jouer = PhotoImage(file=f"{directory.ROOT_DIR}/Icone_Jouer.png")
 btnJouer = Button(
     root,
     image=jouer,
@@ -220,7 +221,7 @@ btnExporter.place(x=btnGenerer.pos_fin / 2 + btnJouer.winfo_x() / 2 - btnExporte
                   y=btnGenerer.winfo_y())
 
 # Affichage de la partition
-partition_raw = Image.open("O_Canada_sheet_music.png")
+partition_raw = Image.open(f"{directory.ROOT_DIR}/O_Canada_sheet_music.png")
 hauteur_part = int(partition_raw.height * multiplicateurY)
 largeur_part = int(partition_raw.width / partition_raw.height * hauteur_part)
 partition_raw = partition_raw.resize((largeur_part, hauteur_part))
