@@ -2,8 +2,16 @@ import tkinter
 import tkinter as tk
 from tkinter import *
 from tkinter import ttk
+from mingus.containers import Composition
+
 from PIL import Image, ImageTk
+
 from resources import directory
+from src.ca.qc.bdeb.sim204.smartsounds.generationMusique import GenerateurPartition
+
+composition = Composition()
+partitionGeneree = False
+partition_raw = Image
 
 base_width = 1728
 base_height = 918
@@ -34,13 +42,13 @@ root.update()
 
 # Tempo Label
 textTempo = tk.Label(root, text="Tempo :", font=("Eras Demi ITC", taille_texte), bg="white")
-textTempo.place(x=textTonalite.winfo_x(), y=textTonalite.winfo_y() + textTonalite.winfo_height() + 100 * multiplicateurY)
+textTempo.place(x=textTonalite.winfo_x(),
+                y=textTonalite.winfo_y() + textTonalite.winfo_height() + 100 * multiplicateurY)
 root.update()
 
 # Durée Label
 textDuree = tk.Label(root, text="Durée :", font=("Eras Demi ITC", taille_texte), bg="white")
 textDuree.place(x=textTonalite.winfo_x(), y=textTempo.winfo_y() + textTempo.winfo_height() + 100 * multiplicateurY)
-
 
 # Tonalité Combobox
 n = tk.StringVar()
@@ -73,7 +81,7 @@ tonalite.place(x=textTonalite.winfo_x() + textTonalite.winfo_width() + espacemen
 tonalite.current(0)
 root.update()
 
-#Majeur/Mineur Combobox
+# Majeur/Mineur Combobox
 majeurOuMineur = tkinter.ttk.Combobox(
     root,
     width=6,
@@ -81,25 +89,26 @@ majeurOuMineur = tkinter.ttk.Combobox(
     font=("Eras Demi ITC", taille_texte)
 )
 majeurOuMineur['values'] = ('Maj',
-                           'Min')
+                            'Min')
 majeurOuMineur['state'] = 'readonly'
 majeurOuMineur.place(x=-100, y=-100)
 majeurOuMineur.current(0)
 
+
 def tonalite_change(event):
-    if "Ré♭" in n.get() :
+    if "Ré♭" in n.get():
         majeurOuMineur['values'] = 'Maj'
         majeurOuMineur.current(0)
 
-    elif "Fa♯" in n.get() :
+    elif "Fa♯" in n.get():
         majeurOuMineur['values'] = 'Min'
         majeurOuMineur.current(0)
 
-    elif "Do♯" in n.get() :
+    elif "Do♯" in n.get():
         majeurOuMineur['values'] = 'Min'
         majeurOuMineur.current(0)
 
-    elif "Sol♭" in n.get() :
+    elif "Sol♭" in n.get():
         majeurOuMineur['values'] = 'Maj'
         majeurOuMineur.current(0)
     else:
@@ -118,12 +127,14 @@ duree.place(x=tonalite.winfo_x(), y=textDuree.winfo_y())
 duree.current(0)
 root.update()
 
-#Ajuster Majeur/Mineur combobox
+# Ajuster Majeur/Mineur combobox
 majeurOuMineur.place(x=duree.winfo_x() + duree.winfo_width() - majeurOuMineur.winfo_width(),
                      y=textTonalite.winfo_y())
 
-#BPM Slider
+# BPM Slider
 current_value = tk.IntVar()
+
+
 def get_current_value():
     return '{: .0f}'.format(current_value.get())
 
@@ -170,44 +181,69 @@ value_label.place(x=-100, y=-100)
 bpm_label.place(x=-100, y=-100)
 root.update()
 
-value_label.place(x=temposlider.winfo_x() + temposlider.winfo_width() / 2 - value_label.winfo_width(), y=temposlider.winfo_y() - value_label.winfo_height())
-bpm_label.place(x=temposlider.winfo_x() + temposlider.winfo_width() / 2, y=temposlider.winfo_y() - value_label.winfo_height())
+value_label.place(x=temposlider.winfo_x() + temposlider.winfo_width() / 2 - value_label.winfo_width(),
+                  y=temposlider.winfo_y() - value_label.winfo_height())
+bpm_label.place(x=temposlider.winfo_x() + temposlider.winfo_width() / 2,
+                y=temposlider.winfo_y() - value_label.winfo_height())
 temposlider.set(30)
 
 
 # Bouton GENERER
-imgGen = PhotoImage(file =f"{directory.ROOT_DIR}/Note_Musique.png")
+def generer():
+    global composition, partitionGeneree, partition_raw
+    composition = GenerateurPartition.generer_partition()
+    GenerateurPartition.generer_png(composition)
+    partitionGeneree = True
+    rafraichir_image()
+
+
+imgGen = PhotoImage(file=f"{directory.ROOT_DIR}/Note_Musique.png")
 
 btnGenerer = tk.Button(
     root,
     text="Générer",
-    width = 400 * multiplicateurX,
-    height = 150 * multiplicateurY,
+    width=400 * multiplicateurX,
+    height=150 * multiplicateurY,
     font=("Informal Roman", int(63 * multiplicateurX), 'bold'),
-    foreground = 'black',
-    image = imgGen,
-    compound=tk.LEFT
+    foreground='black',
+    image=imgGen,
+    compound=tk.LEFT,
+    command=generer
 )
 btnGenerer.place(x=canvas.winfo_x(), y=canvas.winfo_y() + canvas.winfo_height() + 60 * multiplicateurY)
 
+
 # Bouton Exporter
+def exporter():
+    if partitionGeneree:
+        GenerateurPartition.exporter(composition)
+
+
 imgExpo = PhotoImage(file=f"{directory.ROOT_DIR}/Icone_Partager.png")
 
 btnExporter = tk.Button(
     root,
-    image= imgExpo,
+    image=imgExpo,
     width=150 * multiplicateurX,
-    height=150 * multiplicateurY
+    height=150 * multiplicateurY,
+    command=exporter
 )
 btnExporter.place(x=-100, y=-100)
 
+
 # Bouton Jouer
+def commande_jouer():
+    if partitionGeneree:
+        GenerateurPartition.jouer_partition(composition)
+
+
 jouer = PhotoImage(file=f"{directory.ROOT_DIR}/Icone_Jouer.png")
 btnJouer = Button(
     root,
     image=jouer,
-    height = 150 * multiplicateurY,
-    width= 150 * multiplicateurX
+    height=150 * multiplicateurY,
+    width=150 * multiplicateurX,
+    command=commande_jouer
 )
 btnJouer.place(x=-100, y=-100)
 root.update()
@@ -221,16 +257,17 @@ btnExporter.place(x=btnGenerer.pos_fin / 2 + btnJouer.winfo_x() / 2 - btnExporte
                   y=btnGenerer.winfo_y())
 
 # Affichage de la partition
-partition_raw = Image.open(f"{directory.ROOT_DIR}/O_Canada_sheet_music.png")
-hauteur_part = int(partition_raw.height * multiplicateurY)
-largeur_part = int(partition_raw.width / partition_raw.height * hauteur_part)
-partition_raw = partition_raw.resize((largeur_part, hauteur_part))
-partition = ImageTk.PhotoImage(partition_raw)
-imgPart = ttk.Label(
-    root,
-    image=partition,
-    padding=5
-)
-imgPart.place(x=canvas.pos_fin / 2 + root.winfo_width() / 2 - partition.width() / 2, y=25 * multiplicateurY)
+def rafraichir_image():
+    global partition_raw, label, largeur_part
+    partition_raw = Image.open("Composition1.png")
+    hauteur_part = int(height - 50 * multiplicateurY)
+    largeur_part = int(partition_raw.width / partition_raw.height * hauteur_part)
+    partition_raw = partition_raw.resize((largeur_part, hauteur_part))
+    partition = ImageTk.PhotoImage(partition_raw)
+    label.configure(image=partition)
+    label.image = partition
+    label.place(x=canvas.pos_fin / 2 + root.winfo_width() / 2 - partition.width() / 2, y=(height - hauteur_part) / 2 - 10 * multiplicateurY)
 
+largeur_part = 0
+label = ttk.Label(root, image=None, padding=5)
 root.mainloop()
