@@ -11,6 +11,7 @@ from src.ca.qc.bdeb.sim204.smartsounds.generationMusique import GenerateurPartit
 
 composition = Composition()
 partitionGeneree = False
+midi_genere = False
 partition_raw = Image
 
 base_width = 1728
@@ -53,6 +54,7 @@ textDuree.place(x=textTonalite.winfo_x(), y=textTempo.winfo_y() + textTempo.winf
 # Tonalité Combobox
 n = tk.StringVar()
 n2 = tk.StringVar()
+n3 = tk.StringVar()
 tonalite = tkinter.ttk.Combobox(
     root,
     width=6,
@@ -212,11 +214,39 @@ btnGenerer = tk.Button(
 )
 btnGenerer.place(x=canvas.winfo_x(), y=canvas.winfo_y() + canvas.winfo_height() + 60 * multiplicateurY)
 
+# Combobox de sélection du format d'exportation
+format_export = tkinter.ttk.Combobox(
+    root,
+    width=5,
+    textvariable=n3,
+    font=("Eras Demi ITC", taille_texte)
+)
+format_export['values'] = ('PNG',
+                           'PDF',
+                           'WAV',
+                           'MIDI',
+                           'MSCZ')
+format_export['state'] = 'readonly'
+format_export.place(x=-100, y=-100)
+format_export.current(0)
+root.update()
+
 
 # Bouton Exporter
 def exporter():
     if partitionGeneree:
-        GenerateurPartition.exporter(composition)
+        if 'PNG' in n3.get():
+            GenerateurPartition.generer_png(composition)
+        elif 'PDF' in n3.get():
+            GenerateurPartition.exporter_pdf(composition)
+        elif 'WAV' in n3.get():
+            GenerateurPartition.exporter_wav(composition)
+        elif 'MIDI' in n3.get():
+            GenerateurPartition.exporter_midi(composition)
+        elif 'MSCZ' in n3.get():
+            print("À venir!")
+        if not 'MSCZ' in n3.get():
+            print("Exporté!")
 
 
 imgExpo = PhotoImage(file=f"{directory.ROOT_DIR}/Icone_Partager.png")
@@ -224,8 +254,8 @@ imgExpo = PhotoImage(file=f"{directory.ROOT_DIR}/Icone_Partager.png")
 btnExporter = tk.Button(
     root,
     image=imgExpo,
-    width=150 * multiplicateurX,
-    height=150 * multiplicateurY,
+    width=format_export.winfo_width() - 9 * multiplicateurX,
+    height=90 * multiplicateurY,
     command=exporter
 )
 btnExporter.place(x=-100, y=-100)
@@ -255,10 +285,14 @@ btnJouer.place(x=canvas.pos_fin - btnExporter.winfo_width(),
 root.update()
 btnExporter.place(x=btnGenerer.pos_fin / 2 + btnJouer.winfo_x() / 2 - btnExporter.winfo_width() / 2,
                   y=btnGenerer.winfo_y())
+root.update()
+format_export.place(x=btnExporter.winfo_x(),
+                    y=btnGenerer.winfo_y() + btnGenerer.winfo_height() - format_export.winfo_height())
+
 
 # Affichage de la partition
-def rafraichir_image():
-    global partition_raw, label, largeur_part
+def rafraichir_image():  # Cette méthode est en partie tirée de https://python-forum.io/thread-7807.html
+    global partition_raw, label
     partition_raw = Image.open("Composition1.png")
     hauteur_part = int(height - 50 * multiplicateurY)
     largeur_part = int(partition_raw.width / partition_raw.height * hauteur_part)
@@ -266,8 +300,9 @@ def rafraichir_image():
     partition = ImageTk.PhotoImage(partition_raw)
     label.configure(image=partition)
     label.image = partition
-    label.place(x=canvas.pos_fin / 2 + root.winfo_width() / 2 - partition.width() / 2, y=(height - hauteur_part) / 2 - 10 * multiplicateurY)
+    label.place(x=canvas.pos_fin / 2 + root.winfo_width() / 2 - partition.width() / 2,
+                y=(height - hauteur_part) / 2 - 10 * multiplicateurY)
 
-largeur_part = 0
+
 label = ttk.Label(root, image=None, padding=5)
 root.mainloop()
