@@ -19,20 +19,22 @@ def from_track(track):
 
 
 def generer_partition():
+    LilyPond.from_Track = from_track
+
     i = Instrument()
 
     chord = NoteContainer(["C-4", "E-4", "G-4", "C-5"])
     chord2 = NoteContainer(["C-2", "C-3"])
     chord3 = NoteContainer(["C-4", "E-4", "G-4", "Bb-4"])
 
-    b = Bar("C", (2,4))
+    b = Bar("C", (2, 4))
     b.place_notes(chord, 4)
     b.place_notes(chord3, 4)
-    b2 = Bar("C", (2,4))
+    b2 = Bar("C", (2, 4))
     b2.place_notes(chord2, 2)
 
     t1 = Track()
-    t2 = Track()
+    t2 = Track(instrument=i)
     t1.add_bar(b)
     t2.add_bar(b2)
 
@@ -52,13 +54,23 @@ def jouer_partition(partition):
 
 
 def generer_png(partition):
-    LilyPond.from_Track = from_track
     c = LilyPond.from_Composition(partition)
-    return LilyPond.to_png(c, partition.title)
+    LilyPond.to_png(c, partition.title)
 
 
-def exporter(partition):
+def exporter_wav(partition):
     sf = directory.ROOT_DIR + "\\FluidR3_GM.SF2"
+    midi = exporter_midi(partition)
+    ConvertisseurMidi.convertir_midi(midi, sf, partition.title + ".wav")
+    return midi
+
+
+def exporter_midi(partition):
     midi = partition.title + ".midi"
     midi_file_out.write_Composition(midi, partition)
-    ConvertisseurMidi.convertir_midi(midi, sf, partition.title + ".wav")
+    return midi
+
+
+def exporter_pdf(partition):
+    c = LilyPond.from_Composition(partition)
+    LilyPond.to_pdf(c, partition.title)
