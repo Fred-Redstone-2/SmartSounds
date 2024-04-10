@@ -1,5 +1,6 @@
 import subprocess
 
+
 class ConvertisseurMidi:
     @staticmethod
     def convertir_midi(midi_file, soundfont, wav_file):
