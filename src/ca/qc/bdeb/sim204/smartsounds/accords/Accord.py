@@ -29,18 +29,6 @@ class Accord:
         for i in chords.triads(self.tonalite):
             self.progression_accord_milieu.append(i)
         self.progression_accord_fin= [chords.V7(self.tonalite), tonique]
-'''
-        # mineur
-        tonique = chords.I(tonalite_mineure)
-        print("tonique, mineure", tonique)
-        progression_accord_debut_min = [tonique, chords.first_inversion(tonique), chords.first_inversion(tonique),
-                                        chords.second_inversion(tonique)]
-        progression_accord_milieu_min = []
-        for i in chords.triads(tonalite_mineure):
-            progression_accord_milieu_min.append(i)
-        progression_accord_fin_min = [chords.V7(tonalite_mineure), tonique]
-        print(progression_accord_debut_min)
-'''
 
 
 

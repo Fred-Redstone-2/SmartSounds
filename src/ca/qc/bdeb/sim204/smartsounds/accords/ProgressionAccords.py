@@ -2,14 +2,11 @@ import random
 import Accord
 
 
-#éviter 2 accords consécutifs
 class ProgressionAccords:
     progression = []
     nombreMesure = 8  # possible de changer
     tonalite = "C"
-    #ambiance = "majeur"
     Accord: Accord
-
 
     def __init__(self, nombreMesure, tonalite):
         self.nombreMesure = nombreMesure
@@ -17,8 +14,6 @@ class ProgressionAccords:
 
         self.Accord = Accord.Accord(tonalite)
         self.Accord.genererAccord()
-
-
 
     def genererProgressionAccords(self):
     #1 accord au début, 5 au milieu, 2 à la fin
@@ -32,4 +27,4 @@ class ProgressionAccords:
          print("class ProgressionAccord: ", self.progression)
 
 
-  #  def verification_accords_consecutif(self):
+
