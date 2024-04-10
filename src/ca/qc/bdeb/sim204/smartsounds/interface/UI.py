@@ -1,3 +1,4 @@
+from threading import *
 import tkinter
 import tkinter as tk
 from tkinter import *
@@ -191,6 +192,11 @@ temposlider.set(30)
 
 
 # Bouton GENERER
+def commande_generer():
+    t = Thread(target=generer)
+    t.start()
+
+
 def generer():
     global composition, partitionGeneree, partition_raw
     composition = GenerateurPartition.generer_partition()
@@ -210,7 +216,7 @@ btnGenerer = tk.Button(
     foreground='black',
     image=imgGen,
     compound=tk.LEFT,
-    command=generer
+    command=commande_generer
 )
 btnGenerer.place(x=canvas.winfo_x(), y=canvas.winfo_y() + canvas.winfo_height() + 60 * multiplicateurY)
 
@@ -233,6 +239,11 @@ root.update()
 
 
 # Bouton Exporter
+def commande_exporter():
+    t = Thread(target=exporter)
+    t.start()
+
+
 def exporter():
     if partitionGeneree:
         if 'PNG' in n3.get():
@@ -256,21 +267,26 @@ btnExporter = tk.Button(
     image=imgExpo,
     width=format_export.winfo_width() - 9 * multiplicateurX,
     height=90 * multiplicateurY,
-    command=exporter
+    command=commande_exporter
 )
 btnExporter.place(x=-100, y=-100)
 
 
 # Bouton Jouer
 def commande_jouer():
+    t = Thread(target=jouer)
+    t.start()
+
+
+def jouer():
     if partitionGeneree:
         GenerateurPartition.jouer_partition(composition)
 
 
-jouer = PhotoImage(file=f"{directory.ROOT_DIR}/Icone_Jouer.png")
+imgJouer = PhotoImage(file=f"{directory.ROOT_DIR}/Icone_Jouer.png")
 btnJouer = Button(
     root,
-    image=jouer,
+    image=imgJouer,
     height=150 * multiplicateurY,
     width=150 * multiplicateurX,
     command=commande_jouer
