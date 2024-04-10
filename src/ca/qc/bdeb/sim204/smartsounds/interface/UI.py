@@ -1,3 +1,4 @@
+import os
 from threading import *
 import tkinter
 import tkinter as tk
@@ -14,6 +15,7 @@ composition = Composition()
 partitionGeneree = False
 midi_genere = False
 partition_raw = Image
+titreComposition = ""
 
 base_width = 1728
 base_height = 918
@@ -24,7 +26,6 @@ root.configure(bg="light blue")
 
 multiplicateurX = root.winfo_screenwidth() / base_width
 multiplicateurY = root.winfo_screenheight() / base_height
-espacementX = 50 * multiplicateurX
 taille_texte = int(35 * multiplicateurX)
 
 width = (base_width - 100) * multiplicateurX
@@ -32,25 +33,25 @@ height = (base_height - 100) * multiplicateurY
 root.resizable(False, False)
 root.geometry("%dx%d" % (width, height))
 
-canvas = tk.Canvas(root, width=(width / 2), height=height - 325 * multiplicateurY, bg='white')
-canvas.place(x=espacementX, y=50 * multiplicateurY)
+canvas = tk.Canvas(root, width=(width / 2), height=height - 290 * multiplicateurY, bg='white')
+canvas.place(x=40 * multiplicateurX, y=30 * multiplicateurY)
 root.update()
 canvas.pos_fin = canvas.winfo_x() + canvas.winfo_width()
 
 # Tonalité Label
 textTonalite = tk.Label(root, text="Tonalité :", font=("Eras Demi ITC", taille_texte), bg="white")
-textTonalite.place(x=canvas.winfo_x() + espacementX, y=canvas.winfo_y() + 50 * multiplicateurY)
+textTonalite.place(x=canvas.winfo_x() + 50 * multiplicateurX, y=canvas.winfo_y() + 50 * multiplicateurY)
 root.update()
 
 # Tempo Label
 textTempo = tk.Label(root, text="Tempo :", font=("Eras Demi ITC", taille_texte), bg="white")
 textTempo.place(x=textTonalite.winfo_x(),
-                y=textTonalite.winfo_y() + textTonalite.winfo_height() + 100 * multiplicateurY)
+                y=textTonalite.winfo_y() + textTonalite.winfo_height() + 75 * multiplicateurY)
 root.update()
 
 # Durée Label
 textDuree = tk.Label(root, text="Durée :", font=("Eras Demi ITC", taille_texte), bg="white")
-textDuree.place(x=textTonalite.winfo_x(), y=textTempo.winfo_y() + textTempo.winfo_height() + 100 * multiplicateurY)
+textDuree.place(x=textTonalite.winfo_x(), y=textTempo.winfo_y() + textTempo.winfo_height() + 75 * multiplicateurY)
 
 # Tonalité Combobox
 n = tk.StringVar()
@@ -79,7 +80,7 @@ tonalite['values'] = ('Do',
                       'Si♭'
                       )
 tonalite['state'] = 'readonly'
-tonalite.place(x=textTonalite.winfo_x() + textTonalite.winfo_width() + espacementX,
+tonalite.place(x=textTonalite.winfo_x() + textTonalite.winfo_width() + 50 * multiplicateurX,
                y=textTonalite.winfo_y())
 tonalite.current(0)
 root.update()
@@ -121,7 +122,7 @@ def tonalite_change(event):
 
 tonalite.bind('<<ComboboxSelected>>', tonalite_change)
 
-# Mesures Combobox
+# Durée Combobox
 g = tk.StringVar()
 duree = ttk.Combobox(root, width=15, textvariable=g, font=("Eras Demi ITC", taille_texte))
 duree['values'] = ('4 mesures', '8 mesures', '16 mesures', '32 mesures', '64 mesures')
@@ -190,6 +191,20 @@ bpm_label.place(x=temposlider.winfo_x() + temposlider.winfo_width() / 2,
                 y=temposlider.winfo_y() - value_label.winfo_height())
 temposlider.set(30)
 
+# Titre de la partition
+textTitre = tk.Label(root, text="Titre :", font=("Eras Demi ITC", taille_texte), bg="white")
+textTitre.place(x=textTonalite.winfo_x(),
+                y=textDuree.winfo_y() + textDuree.winfo_height() + 75 * multiplicateurY)
+titre = tk.Text(root,
+                bg="white",
+                font=("Eras Demi ITC", taille_texte),
+                width=20,
+                height=1)
+titre.place(x=-100, y=-100)
+root.update()
+titre.place(x=duree.winfo_x() + duree.winfo_width() - titre.winfo_width(),
+            y=textTitre.winfo_y())
+
 
 # Bouton GENERER
 def commande_generer():
@@ -198,11 +213,19 @@ def commande_generer():
 
 
 def generer():
-    global composition, partitionGeneree, partition_raw
-    composition = GenerateurPartition.generer_partition()
-    GenerateurPartition.generer_png(composition)
-    partitionGeneree = True
-    rafraichir_image()
+    global composition, partitionGeneree, titreComposition
+    if titre.get("1.0", "end-1c") == "":
+        print("Le titre ne peut pas être vide!")
+    else:
+        try:
+            os.remove(titreComposition + ".png")
+        except FileNotFoundError:
+            ""
+        titreComposition = titre.get("1.0", "end-1c")
+        composition = GenerateurPartition.generer_partition(titreComposition)
+        GenerateurPartition.generer_png(composition)
+        partitionGeneree = True
+        rafraichir_image()
 
 
 imgGen = PhotoImage(file=f"{directory.ROOT_DIR}/Note_Musique.png")
@@ -218,12 +241,12 @@ btnGenerer = tk.Button(
     compound=tk.LEFT,
     command=commande_generer
 )
-btnGenerer.place(x=canvas.winfo_x(), y=canvas.winfo_y() + canvas.winfo_height() + 60 * multiplicateurY)
+btnGenerer.place(x=-100, y=-100)
 
 # Combobox de sélection du format d'exportation
 format_export = tkinter.ttk.Combobox(
     root,
-    width=5,
+    width=6,
     textvariable=n3,
     font=("Eras Demi ITC", taille_texte)
 )
@@ -255,7 +278,7 @@ def exporter():
         elif 'MIDI' in n3.get():
             GenerateurPartition.exporter_midi(composition)
         elif 'MSCZ' in n3.get():
-            print("À venir!")
+            print("Vous n'avez qu'à importer le fichier midi dans MuseScore, et tout fonctionnera parfaitement!")
         if not 'MSCZ' in n3.get():
             print("Exporté!")
 
@@ -293,13 +316,17 @@ btnJouer = Button(
 )
 btnJouer.place(x=-100, y=-100)
 root.update()
-btnGenerer.pos_fin = btnGenerer.winfo_x() + btnGenerer.winfo_width()
 
-# Ajustement boutons Jouer et Exporter
-btnJouer.place(x=canvas.pos_fin - btnExporter.winfo_width(),
+# Ajustement boutons Générer, Jouer et Exporter
+btnGenerer.place(x=canvas.winfo_x(),
+                 y=(canvas.winfo_y() + canvas.winfo_height()) / 2 + root.winfo_height() / 2 -
+                   btnGenerer.winfo_height() / 2)
+root.update()
+btnJouer.place(x=canvas.pos_fin - btnJouer.winfo_width(),
                y=btnGenerer.winfo_y())
 root.update()
-btnExporter.place(x=btnGenerer.pos_fin / 2 + btnJouer.winfo_x() / 2 - btnExporter.winfo_width() / 2,
+btnExporter.place(x=(btnGenerer.winfo_x() + btnGenerer.winfo_width()) / 2 +
+                    btnJouer.winfo_x() / 2 - btnExporter.winfo_width() / 2,
                   y=btnGenerer.winfo_y())
 root.update()
 format_export.place(x=btnExporter.winfo_x(),
@@ -309,7 +336,8 @@ format_export.place(x=btnExporter.winfo_x(),
 # Affichage de la partition
 def rafraichir_image():  # Cette méthode est en partie tirée de https://python-forum.io/thread-7807.html
     global partition_raw, label
-    partition_raw = Image.open("Composition1.png")
+    nom_image = titreComposition + ".png"
+    partition_raw = Image.open(nom_image)
     hauteur_part = int(height - 50 * multiplicateurY)
     largeur_part = int(partition_raw.width / partition_raw.height * hauteur_part)
     partition_raw = partition_raw.resize((largeur_part, hauteur_part))
