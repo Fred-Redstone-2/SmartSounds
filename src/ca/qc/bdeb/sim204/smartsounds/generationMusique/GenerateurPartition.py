@@ -88,7 +88,7 @@ def generer_png(partition):
 def exporter_wav(partition):
     sf = directory.ROOT_DIR + "\\FluidR3_GM.SF2"
     midi = exporter_midi(partition)
-    ConvertisseurMidi.convertir_midi(midi, sf, partition.title + ".wav")
+    ConvertisseurMidi.convertir_wav(midi, sf, partition.title + ".wav")
     return midi
 
 
