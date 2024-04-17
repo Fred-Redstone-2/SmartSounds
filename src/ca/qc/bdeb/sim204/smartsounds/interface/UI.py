@@ -1,8 +1,11 @@
 import os
+import time
 from threading import *
+
 import tkinter
 import tkinter as tk
 from tkinter import *
+from tkinter import filedialog
 from tkinter import ttk
 from mingus.containers import Composition
 
@@ -32,6 +35,28 @@ width = (base_width - 100) * multiplicateurX
 height = (base_height - 100) * multiplicateurY
 root.resizable(False, False)
 root.geometry("%dx%d" % (width, height))
+
+
+# Fenêtre affichant un message donné. Cette méthode est tirée de
+#   https://www.tutorialspoint.com/how-do-i-create-a-popup-window-in-tkinter
+def popup(texte):
+    top = Toplevel(root)
+    x = 800 * multiplicateurX
+    y = 200 * multiplicateurY
+    top.geometry("%dx%d" % (x, y))
+    top.title("")
+    texte = Label(top, text=texte, font=("Eras Demi ITC", taille_texte))
+    texte.config(wraplength=(x - 10 * multiplicateurX))
+    texte.place(relx=0.5, rely=0.5, anchor=CENTER)
+
+
+# Supprime le fichier donné
+def supprimer(fichier):
+    try:
+        os.remove(fichier)
+    except FileNotFoundError:
+        ""
+
 
 canvas = tk.Canvas(root, width=(width / 2), height=height - 290 * multiplicateurY, bg='white')
 canvas.place(x=40 * multiplicateurX, y=30 * multiplicateurY)
@@ -215,12 +240,8 @@ def commande_generer():
 def generer():
     global composition, partitionGeneree, titreComposition
     if titre.get("1.0", "end-1c") == "":
-        print("Le titre ne peut pas être vide!")
+        popup("Le titre ne peut pas être vide!")
     else:
-        try:
-            os.remove(titreComposition + ".png")
-        except FileNotFoundError:
-            ""
         titreComposition = titre.get("1.0", "end-1c")
         composition = GenerateurPartition.generer_partition(titreComposition)
         GenerateurPartition.generer_png(composition)
@@ -261,26 +282,44 @@ format_export.current(0)
 root.update()
 
 
-# Bouton Exporter
+## Exportation
+# Assigne un Thread à l'exportation, pour que l'interface ne gèle pas
 def commande_exporter():
     t = Thread(target=exporter)
     t.start()
 
 
+# Déplace le fichier exporté vers l'endroit sélectionné
+def deplacer(path_location):
+    format_exp = n3.get().lower()
+    if 'MSCZ' in n3.get():
+        format_exp = "midi"
+    try:
+        os.replace("%s.%s" % (composition.title, format_exp), path_location +
+                   "\\%s.%s" % (composition.title, format_exp))
+        message = ("Exportation en %s réussie!" % format_exp.upper())
+    except PermissionError:
+        message = "Erreur dans l'exportation!"
+    popup(message)
+
+
+# Choisit, selon le format sélectionné, quelle méthode exécuter pour exporter la partition dans le bon format
 def exporter():
     if partitionGeneree:
+        if 'MSCZ' in n3.get():
+            popup("Vous n'avez qu'à importer le fichier midi dans MuseScore, et tout fonctionnera parfaitement!")
+            time.sleep(3.5)
+        path_location = filedialog.askdirectory()
         if 'PNG' in n3.get():
             GenerateurPartition.generer_png(composition)
         elif 'PDF' in n3.get():
             GenerateurPartition.exporter_pdf(composition)
         elif 'WAV' in n3.get():
             GenerateurPartition.exporter_wav(composition)
-        elif 'MIDI' in n3.get():
+            supprimer(composition.title + ".midi")
+        elif 'MIDI' or 'MSCZ' in n3.get():
             GenerateurPartition.exporter_midi(composition)
-        elif 'MSCZ' in n3.get():
-            print("Vous n'avez qu'à importer le fichier midi dans MuseScore, et tout fonctionnera parfaitement!")
-        if not 'MSCZ' in n3.get():
-            print("Exporté!")
+        deplacer(path_location)
 
 
 imgExpo = PhotoImage(file=f"{directory.ROOT_DIR}/Icone_Partager.png")
@@ -304,6 +343,7 @@ def commande_jouer():
 def jouer():
     if partitionGeneree:
         GenerateurPartition.jouer_partition(composition)
+        supprimer(composition.title + ".midi")
 
 
 imgJouer = PhotoImage(file=f"{directory.ROOT_DIR}/Icone_Jouer.png")
@@ -346,6 +386,7 @@ def rafraichir_image():  # Cette méthode est en partie tirée de https://python
     label.image = partition
     label.place(x=canvas.pos_fin / 2 + root.winfo_width() / 2 - partition.width() / 2,
                 y=(height - hauteur_part) / 2 - 10 * multiplicateurY)
+    supprimer(nom_image)
 
 
 label = ttk.Label(root, image=None, padding=5)
