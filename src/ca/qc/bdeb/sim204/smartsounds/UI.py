@@ -12,7 +12,7 @@ from mingus.containers import Composition
 from PIL import Image, ImageTk
 
 from resources import directory
-from src.ca.qc.bdeb.sim204.smartsounds.generationMusique import GenerateurPartition
+from src.ca.qc.bdeb.sim204.smartsounds import GenerateurPartition
 
 composition = Composition()
 partitionGeneree = False
