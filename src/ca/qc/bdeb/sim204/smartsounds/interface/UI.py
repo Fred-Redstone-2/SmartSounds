@@ -242,7 +242,6 @@ def generer():
     if titre.get("1.0", "end-1c") == "":
         popup("Le titre ne peut pas être vide!")
     else:
-        supprimer(titreComposition + ".png")
         titreComposition = titre.get("1.0", "end-1c")
         composition = GenerateurPartition.generer_partition(titreComposition)
         GenerateurPartition.generer_png(composition)
