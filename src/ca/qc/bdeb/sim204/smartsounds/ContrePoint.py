@@ -3,7 +3,7 @@ from src.ca.qc.bdeb.sim204.smartsounds import ProgressionAccords
 import Rythme
 import random
 from mingus.core import notes as Core_Notes
-import mingus.core.intervals as Intervals
+from src.ca.qc.bdeb.sim204.smartsounds import Modulation
 #modulation>>> (class?)
 '''
 1.Pas de notes répétées dans le cantus firmus (accepter 2 répétition). 
@@ -55,6 +55,9 @@ class ContrePoint:
     leaps = []
     list_intervals = []
     directions = []
+    modulation: Modulation
+    m_cf = [] # cantus_firmus en tonalité apparentée
+    m_cp = [] # contrepoint en tonalité apparentée
 
     def __init__(self, nombre_mesure, tonalite):
         self.progression = ProgressionAccords.ProgressionAccords(nombre_mesure, tonalite)
@@ -284,11 +287,9 @@ No parallel three-note chains.
 
     def modulation(self):
         tonalite = self.progression.tonalite[0] + ""
-        tonalite_apparentee = ""
-        if tonalite.isupper():  # majeure
-            tonalite_apparentee = Intervals.perfect_fifth(tonalite)  # to major. related key: dominant, pivote chord: forth (tonique in principal key  = fourth in related key)
-        elif tonalite.islower():  # mineure
-            tonalite_apparentee = Intervals.minor_third(tonalite) # to major. related key: third, pivote chord: major third (third in principal key = tonique in related key)
+        self.modulation = Modulation.modulation(8, tonalite)
+        self.modulation.modulation_en_cours()
+
 
 
 '''
