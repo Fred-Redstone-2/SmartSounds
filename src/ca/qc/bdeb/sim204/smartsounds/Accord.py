@@ -2,7 +2,7 @@
 import mingus.core.chords as chords
 import random
 import mingus.core.scales as gamme
-import mingus.core.keys as keys
+import mingus.core.keys as tonalites
 
 
 class Accord:
@@ -13,9 +13,9 @@ class Accord:
     progression_accord_milieu = []
     progression_accord_fin = []
 
-    tonalite_majeure_list = keys.major_keys
+    tonalite_majeure_list = tonalites.major_keys
     # ['Cb', 'Gb', 'Db', 'Ab', 'Eb', 'Bb', 'F', 'C', 'G', 'D', 'A', 'E', 'B', 'F#', 'C#']
-    tonalite_mineure_list = keys.minor_keys
+    tonalite_mineure_list = tonalites.minor_keys
     # ['ab', 'eb', 'bb', 'f', 'c', 'g', 'd', 'a', 'e', 'b', 'f#', 'c#', 'g#', 'd#', 'a#']
     def __init__(self, tonalite):
         self.tonalite = tonalite

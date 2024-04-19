@@ -29,15 +29,17 @@ def generer_partition(titre):
 
     contrepoint = ContrePoint.ContrePoint(8, "D")
     contrepoint.verifier_melodie()
-    contrepoint.verifier_first_specie()
-    n1 = ContrePoint.retourne_cantus_firmus()
-    n2 = ContrePoint.retourne_contrepoint()
+    n = contrepoint.verifier_first_specie()
+
+    n1 = n[0]
+    n2 = n[1]
 
     t1 = Track()
     t2 = Track(instrument=i)
-    for x in n1:
 
+    for x in n1:
         t1.add_notes(x)
+
     for y in n2:
         t2.add_notes(y)
 
@@ -47,6 +49,7 @@ def generer_partition(titre):
     c.set_title(c.title)
     c.add_track(t1)
     c.add_track(t2)
+
     return c
 
 

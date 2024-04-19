@@ -3,9 +3,8 @@ from src.ca.qc.bdeb.sim204.smartsounds import ProgressionAccords
 import Rythme
 import random
 from mingus.core import notes as Core_Notes
-
-# pour l'instant, il n'y a pas de saut plus grand qu'un octave dans cantus firmus généré( limite d'un octave)
-# revoir tranpose() in #10
+import mingus.core.intervals as Intervals
+#modulation>>> (class?)
 '''
 1.Pas de notes répétées dans le cantus firmus (accepter 2 répétition). 
 2. Pas de sauts d’une octave ou plus. 
@@ -13,7 +12,6 @@ from mingus.core import notes as Core_Notes
 4. Entre deux et quatre sauts au total. 
 /5. Possède un point culminant (note la plus haute) qui n’est pas la tonique ou la sensible. 
 /6. Change de direction au moins deux fois. 
-/7. Aucune note répétée plus de 3 fois. 
 8. La note finale est approchée par un pas (pas un saut)
 /9.les sauts plus grands que M3 doivent être suivis d'un changement de direction 
         *** si a note après et M2/m2 dans la même direction, changer après cela,
@@ -26,7 +24,7 @@ from mingus.core import notes as Core_Notes
 /Pas de “noodling” (c’est-à-dire des motifs tels que N1 N2 N1 N2, pour certaines notes N1 et N2). ***
 /Pas de séquences de plus de quatre notes consécutives.
 /Pas de tension mélodique non résolue (c’est-à-dire que la note de départ et la note de fin de chaque séquence doivent être consonantes ensemble).
-/Pas de motifs de trois notes répétés. 
+Pas de motifs de trois notes répétés. 
 '''
 
 cantus_firmus = []
@@ -52,11 +50,11 @@ class ContrePoint:
     progression: ProgressionAccords
     nombre_notes_par_mesure: int
     cantus_firmus = []
+    contre_point = []
     rythme: Rythme
     leaps = []
     list_intervals = []
     directions = []
-    contre_point = []
 
     def __init__(self, nombre_mesure, tonalite):
         self.progression = ProgressionAccords.ProgressionAccords(nombre_mesure, tonalite)
@@ -80,13 +78,14 @@ class ContrePoint:
         return list_notes
 
     def verifier_melodie(self):
+
         verifiee = False
         while not verifiee:
             self.cantus_firmus = ContrePoint.creer_list_notes(self, "cantus_firmus")
             self.contre_point = ContrePoint.creer_list_notes(self, "contre_point")
             intervals = [notes.Note(self.cantus_firmus[i]).measure(notes.Note(self.cantus_firmus[i + 1])) for i in
                          range(len(self.cantus_firmus) - 1)]
-            print("list_intervals: ", intervals )
+            print("list_intervals: ", intervals)
 
             leaps = [i for i in intervals if abs(i) > self.Leap]
             print("leaps: ", leaps)
@@ -281,6 +280,18 @@ No parallel three-note chains.
                     pas_de_dissonance_verticale() and pas_interval_superieur_a_12() and pas_interval_parfait_paralle() and pas_de_motifs_de_trois_intervals_repetes())
         print("verifiee=", verifiee)
 
+        return self.cantus_firmus, self.contre_point
+
+    def modulation(self):
+        tonalite = self.progression.tonalite[0] + ""
+        tonalite_apparentee = ""
+        if tonalite.isupper():  # majeure
+            tonalite_apparentee = Intervals.perfect_fifth(tonalite)  # to major. related key: dominant, pivote chord: forth (tonique in principal key  = fourth in related key)
+        elif tonalite.islower():  # mineure
+            tonalite_apparentee = Intervals.minor_third(tonalite) # to major. related key: third, pivote chord: major third (third in principal key = tonique in related key)
+
+
+'''
         if verifiee:
             global cantus_firmus, contrepoint
             cantus_firmus = self.cantus_firmus
@@ -293,3 +304,4 @@ def retourne_cantus_firmus():
 
 def retourne_contrepoint():
     return contrepoint
+'''
