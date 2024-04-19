@@ -1,4 +1,3 @@
-
 import mingus.core.chords as chords
 import random
 import mingus.core.scales as gamme
@@ -7,8 +6,6 @@ import mingus.core.keys as tonalites
 
 class Accord:
     tonalite = "C"
-    tonalite_majeure = "C#"
-    tonalite_mineure = "c#"
     progression_accord_debut = []
     progression_accord_milieu = []
     progression_accord_fin = []
@@ -21,9 +18,25 @@ class Accord:
         self.tonalite = tonalite
 
     def genererAccord(self):
+        print("class Accords: accords: ")
         # majeur
-        tonique = chords.I(self.tonalite)
+        tonique = chords.tonic(self.tonalite)
         self.progression_accord_debut = [tonique]
         for i in chords.triads(self.tonalite):
             self.progression_accord_milieu.append(i)
         self.progression_accord_fin = [chords.V7(self.tonalite), tonique]
+
+    def generer_acoords_modulation(self, pivot):
+        print("class Accords: accords modulation:  ")
+        n = []
+        if pivot == "4":  # tonalité associé en dominant, majeure
+            n = chords.subdominant(self.tonalite)
+        elif pivot == "6":
+            n = chords.major_sixth(self.tonalite)
+
+        # begin and end with pivot
+        self.progression_accord_debut = n
+        for i in chords.triads(self.tonalite):
+            self.progression_accord_milieu.append(i)
+        self.progression_accord_fin = n
+

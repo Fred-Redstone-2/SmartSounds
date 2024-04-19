@@ -4,7 +4,8 @@ import Rythme
 import random
 from mingus.core import notes as Core_Notes
 from src.ca.qc.bdeb.sim204.smartsounds import Modulation
-#modulation>>> (class?)
+
+# modulation>>> (class?)
 '''
 1.Pas de notes répétées dans le cantus firmus (accepter 2 répétition). 
 2. Pas de sauts d’une octave ou plus. 
@@ -56,13 +57,20 @@ class ContrePoint:
     list_intervals = []
     directions = []
     modulation: Modulation
-    m_cf = [] # cantus_firmus en tonalité apparentée
-    m_cp = [] # contrepoint en tonalité apparentée
+    m_cf = []  # cantus_firmus en tonalité apparentée
+    m_cp = []  # contrepoint en tonalité apparentée
+    cf_somme = []  # cantus_firmus en somme
+    cp_somme = []  # contrepoint en somme
 
-    def __init__(self, nombre_mesure, tonalite):
-        self.progression = ProgressionAccords.ProgressionAccords(nombre_mesure, tonalite)
-        if not self.progression.progression is None:
-            self.progression.genererProgressionAccords()
+    def __init__(self, nombre_mesure, tonalite, progression: ProgressionAccords = None):
+        if progression is not None:
+            self.progression = progression
+            print("class ContrePoint: constructeur pour modulation")
+        else:
+            self.progression = ProgressionAccords.ProgressionAccords(tonalite, nombre_mesure)
+            if not self.progression.progression is None:
+                self.progression.genererProgressionAccords()
+            print("constructeur normal")
 
     def creer_list_notes(self, type):
         if type == "cantus_firmus":
@@ -287,9 +295,19 @@ No parallel three-note chains.
 
     def modulation(self):
         tonalite = self.progression.tonalite[0] + ""
-        self.modulation = Modulation.modulation(8, tonalite)
-        self.modulation.modulation_en_cours()
+        self.modulation = Modulation.Modulation(tonalite)
+        mod = self.modulation.modulation_en_cours()
+        self.m_cf = mod[0]
+        self.m_cp = mod[1]
+        return self.m_cf, self.m_cp
 
+    def en_tout(self):
+        c1 = ContrePoint.verifier_melodie(self)
+        c2 = ContrePoint.modulation(self)
+        c3 = ContrePoint.verifier_melodie(self)
+        self.cf_somme = c1[0]+c2[0]+c3[0]
+        self.cp_somme = c1[1]+c2[1]+c3[1]
+        return self.cf_somme, self.cp_somme
 
 
 '''
