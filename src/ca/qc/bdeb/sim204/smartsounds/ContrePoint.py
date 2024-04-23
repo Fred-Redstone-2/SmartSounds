@@ -5,7 +5,6 @@ import random
 from mingus.core import notes as Core_Notes
 from src.ca.qc.bdeb.sim204.smartsounds import Modulation
 
-# modulation>>> (class?)
 '''
 1.Pas de notes répétées dans le cantus firmus (accepter 2 répétition). 
 2. Pas de sauts d’une octave ou plus. 
@@ -61,23 +60,22 @@ class ContrePoint:
     m_cp = []  # contrepoint en tonalité apparentée
     cf_somme = []  # cantus_firmus en somme
     cp_somme = []  # contrepoint en somme
+    en_modulation = False
 
     def __init__(self, nombre_mesure, tonalite, progression: ProgressionAccords = None):
         if progression is not None:
             self.progression = progression
-            print("class ContrePoint: constructeur pour modulation")
         else:
             self.progression = ProgressionAccords.ProgressionAccords(tonalite, nombre_mesure)
             if not self.progression.progression is None:
-                self.progression.genererProgressionAccords()
-            print("constructeur normal")
+                self.progression.generer_progression_accords()
 
     def creer_list_notes(self, type):
         if type == "cantus_firmus":
             s = self.s_cf
         if type == "contre_point":
             s = self.s_cp
-        print("class ContrePoint, method verifier_melodie: ", self.progression.progression)
+
         list_notes = []
 
         for i in self.progression.progression:
@@ -85,7 +83,7 @@ class ContrePoint:
         elements = [self.progression.progression[-2][-1], self.progression.progression[-2][0]]
         list_notes[-2] = random.choice(elements) + s
         list_notes[-1] = self.progression.progression[-1][0] + s  # tonique
-        print("list_note: ", list_notes)
+
         return list_notes
 
     def verifier_melodie(self):
@@ -112,13 +110,16 @@ class ContrePoint:
                     if intervals.count(0) <= 3:
                         return True
                     else:
-
                         print("échec: trop de répétition dans contrepoint")
                         return False
 
             def pas_intervals_dissonants():
-                intervals_acceptes = [self.M3, self.m3, self.P4, self.P5, self.M6, self.m6, self.P8, self.M2, self.m2]
-                if not any([abs(i) not in intervals_acceptes for i in intervals]):
+                intervals_acceptes = [self.M3, self.m3, self.P5, self.M6, self.m6, self.P8, self.M2, self.m2,
+                                      ]
+                for i in range(len(intervals)):
+                    intervals[i] = abs(intervals[i])
+
+                if not any([i not in intervals_acceptes for i in intervals]):
                     return True
                 else:
 
@@ -132,6 +133,8 @@ class ContrePoint:
                     print("échec: trop ou pas assez de sauts")
 
             def note_finale_aprochee_par_pas():
+                if self.en_modulation:
+                    return True  # pas cette méthode pour vérifier la modulation
                 if self.cantus_firmus:
                     if notes.Note(self.cantus_firmus[-1]).measure(notes.Note(self.cantus_firmus[-2])) >= self.Step:
                         return True
@@ -199,11 +202,6 @@ class ContrePoint:
                         return False
                 return True
 
-            # print("échec: pas de saut plus grand qu'un octave")
-            #   if self.cantus_firmus:
-            #      self.cantus_firmus[i + 1] = self.cantus_firmus[i + 1][0:-2] + str(
-            #         int(self.cantus_firmus[i][-1]))
-
             def pas_de_mouvement_repete():
                 note_repetee = ""
                 compteur = 0
@@ -219,11 +217,11 @@ class ContrePoint:
                         compteur = 0
                 return True
 
-            verifiee = (
-                    pas_de_repetition() and pas_intervals_dissonants() and entre_deux_et_quatre_sauts()
-                    and note_finale_aprochee_par_pas() and sauts_trop_large_changer_de_direction()
-                    and pas_de_sauts_plus_grand_que_octave() and pas_de_mouvement_repete()
-            )
+            verifiee = (pas_de_repetition() and entre_deux_et_quatre_sauts()
+                        and note_finale_aprochee_par_pas() and sauts_trop_large_changer_de_direction()
+                        and pas_de_sauts_plus_grand_que_octave() and pas_de_mouvement_repete()
+                        and pas_intervals_dissonants()
+                        )
 
         print("cantus_firmus après changé: ", self.cantus_firmus)
         print("contrepoint après changé: ", self.contre_point)
@@ -302,13 +300,21 @@ No parallel three-note chains.
         return self.m_cf, self.m_cp
 
     def en_tout(self):
-        c1 = ContrePoint.verifier_melodie(self)
-        c2 = ContrePoint.modulation(self)
-        c3 = ContrePoint.verifier_melodie(self)
-        self.cf_somme = c1[0]+c2[0]+c3[0]
-        self.cp_somme = c1[1]+c2[1]+c3[1]
+        for i in range(4):
+            c1 = ContrePoint.verifier_melodie(self)
+            self.cf_somme += c1[0]
+            self.cp_somme += c1[1]
+        for i in range(2):
+            c2 = ContrePoint.modulation(self)
+            self.cf_somme += c2[0]
+            self.cp_somme += c2[1]
+        for i in range(2):
+            c3 = ContrePoint.verifier_melodie(self)
+            self.cf_somme += c3[0]
+            self.cp_somme += c3[1]
+        print(self.cf_somme)
+        print(self.cp_somme)
         return self.cf_somme, self.cp_somme
-
 
 '''
         if verifiee:
