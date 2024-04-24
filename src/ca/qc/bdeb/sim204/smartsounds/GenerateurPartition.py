@@ -19,7 +19,8 @@ def from_track(track):
     return result
 
 
-def generer_partition(titre):
+# Génère la partition et la retourne en format mingus
+def generer_partition(titre, nombre_mesures, tonalite):
     LilyPond.from_Track = from_track
 
     i = Instrument()
@@ -27,7 +28,7 @@ def generer_partition(titre):
     # melody = Melody.Melody(8, "D", (3, 4))
     # melody.generer_melodie()
 
-    contrepoint = ContrePoint.ContrePoint(8, "E")
+    contrepoint = ContrePoint.ContrePoint(nombre_mesures, tonalite)
     n = contrepoint.en_tout()
 
     n1 = n[0]
@@ -40,7 +41,7 @@ def generer_partition(titre):
         t1.add_notes(n1[x])
         t2.add_notes(n2[x])
 
-   # for y in n2:
+    # for y in n2:
     #    t2.add_notes(y)
 
     c = Composition()
@@ -49,10 +50,11 @@ def generer_partition(titre):
     c.set_title(c.title)
     c.add_track(t1)
     c.add_track(t2)
-
+    print("Composition : ", LilyPond.from_Composition(c))
     return c
 
 
+# Joue le fichier MIDI donné
 def play_music(music_file):
     # Cette méthode est tirée de https://www.daniweb.com/programming/software-development/code/216979/embed-and-play-midi-music-in-your-code-python
     clock = pygame.time.Clock()
@@ -63,6 +65,7 @@ def play_music(music_file):
         clock.tick(30)
 
 
+# Prépare la composition donnée à être jouée
 def jouer_partition(partition):
     midi = exporter_midi(partition)
     freq = 44100  # audio CD quality
@@ -73,23 +76,47 @@ def jouer_partition(partition):
     play_music(midi)
 
 
+# Convertit la composition en image PNG avec LilyPond
 def generer_png(partition):
     c = LilyPond.from_Composition(partition)
-    LilyPond.to_png(c, partition.title)
+    header = c.split("}")[0] + "}"
+    accompagnement = c.split("\\clef bass")[1]
+    melodie = c.split("{ {")[1].split("} }")[0].strip()
+
+    upper = ""
+    lower = ""
+
+    for i in melodie.split("{"):
+        upper += i.strip().replace("}", "")
+
+    for j in accompagnement.split("{"):
+        lower += j.strip().replace("}", "")
+
+    staff = " {\n\\new PianoStaff << \n"
+    staff += "  \\new Staff { \\clef treble " + upper + " }\n"
+    staff += "  \\new Staff { \\clef bass " + lower + "}\n"
+    staff += ">>\n}\n"
+
+    resultat = '\\version "2.25.10"\n' + header + staff
+
+    LilyPond.to_png(resultat, partition.title)
 
 
+# Prépare la composition donnée à être convertie en WAV
 def exporter_wav(partition):
     sf = directory.ROOT_DIR + "\\FluidR3_GM.SF2"
     midi = exporter_midi(partition)
     ConvertisseurMidi.convertir_wav(midi, sf, partition.title + ".wav")
 
 
+# Convertit la composition donnée en midi
 def exporter_midi(partition):
     midi = partition.title + ".midi"
     midi_file_out.write_Composition(midi, partition)
     return midi
 
 
+# Convertit la composition donnée en PDF par LilyPond
 def exporter_pdf(partition):
     c = LilyPond.from_Composition(partition)
     LilyPond.to_pdf(c, partition.title)
