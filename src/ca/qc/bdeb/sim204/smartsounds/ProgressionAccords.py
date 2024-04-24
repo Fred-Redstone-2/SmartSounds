@@ -51,7 +51,7 @@ class ProgressionAccords:
 
         while not verifiee:
             ProgressionAccords.vider_list(self)
-
+            print(self.progression , "   ----***************************self.progression")
             # 1 accord au début, 6 au milieu, 1 à la fin
             self.progression.append(self.Accord.progression_accord_debut)
             for i in range(6):
@@ -82,6 +82,6 @@ class ProgressionAccords:
                     compteur += 1
 
                     if compteur >= 3:
+                        print(self.progression[i], " repeated chrods")
                         return False
-
         return True

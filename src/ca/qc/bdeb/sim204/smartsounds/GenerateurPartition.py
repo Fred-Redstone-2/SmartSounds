@@ -27,7 +27,8 @@ def generer_partition(titre):
     # melody = Melody.Melody(8, "D", (3, 4))
     # melody.generer_melodie()
 
-    contrepoint = ContrePoint.ContrePoint(8, "E")
+    contrepoint = ContrePoint.ContrePoint(8, "D")
+
     n = contrepoint.en_tout()
 
     n1 = n[0]

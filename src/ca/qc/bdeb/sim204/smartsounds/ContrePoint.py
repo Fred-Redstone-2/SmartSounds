@@ -115,7 +115,7 @@ class ContrePoint:
 
             def pas_intervals_dissonants():
                 intervals_acceptes = [self.M3, self.m3, self.P5, self.M6, self.m6, self.P8, self.M2, self.m2,
-                                      ]
+                                      self.P1]
                 for i in range(len(intervals)):
                     intervals[i] = abs(intervals[i])
 
@@ -300,20 +300,15 @@ No parallel three-note chains.
         return self.m_cf, self.m_cp
 
     def en_tout(self):
-        for i in range(4):
-            c1 = ContrePoint.verifier_melodie(self)
-            self.cf_somme += c1[0]
-            self.cp_somme += c1[1]
-        for i in range(2):
-            c2 = ContrePoint.modulation(self)
-            self.cf_somme += c2[0]
-            self.cp_somme += c2[1]
-        for i in range(2):
-            c3 = ContrePoint.verifier_melodie(self)
-            self.cf_somme += c3[0]
-            self.cp_somme += c3[1]
+        c1 = ContrePoint.verifier_melodie(self)
+        c2 = ContrePoint.modulation(self)
+        c3 = ContrePoint.verifier_melodie(self)
+        self.cf_somme = c1[0] + c2[0] + c3[0]
+        self.cp_somme = c1[1] + c2[1] + c3[1]
+
         print(self.cf_somme)
         print(self.cp_somme)
+        print(len(self.cf_somme))
         return self.cf_somme, self.cp_somme
 
 '''

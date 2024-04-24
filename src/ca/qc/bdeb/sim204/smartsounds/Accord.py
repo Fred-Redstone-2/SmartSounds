@@ -26,6 +26,7 @@ class Accord:
         self.progression_accord_fin = [chords.V7(self.tonalite), tonique]
 
     def generer_acoords_modulation(self, pivot, accords):
+        print("---------------------------------------------------------------------------------------------------------")
         n = []
         if pivot == "4":  # tonalité associé en dominant, majeure
             n = accords[3]
@@ -37,7 +38,7 @@ class Accord:
         self.progression_accord_debut = n
 
         accords_milieu = chords.triads(self.tonalite)
-
+        print(accords_milieu)
         for i in accords_milieu:
             self.progression_accord_milieu.append(i)
         self.progression_accord_fin = n
