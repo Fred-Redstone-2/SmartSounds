@@ -24,7 +24,7 @@ class Melody:
 
     def generer_melodie(self):
 
-        self.progression.genererProgressionAccords()
+        self.progression.generer_progression_accords()
         for x in range(len(self.progression.progression)):
             loi_de_probabilite = []
             accord = self.progression.progression[x]
