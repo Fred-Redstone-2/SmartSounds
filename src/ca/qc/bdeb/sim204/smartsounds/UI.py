@@ -12,14 +12,16 @@ from mingus.containers import Composition
 from PIL import Image, ImageTk
 
 from resources import directory
-from src.ca.qc.bdeb.sim204.smartsounds import GenerateurPartition
+import GenerateurPartition
 
+## VARIABLES GÉNÉRALES
 composition = Composition()
 partitionGeneree = False
 midi_genere = False
 partition_raw = Image
 titreComposition = ""
 
+## FENÊTRE DE BASE
 base_width = 1728
 base_height = 918
 
@@ -58,6 +60,7 @@ def supprimer(fichier):
         ""
 
 
+## COMPOSANTS DE LA FENÊTRE
 canvas = tk.Canvas(root, width=(width / 2), height=height - 290 * multiplicateurY, bg='white')
 canvas.place(x=40 * multiplicateurX, y=30 * multiplicateurY)
 root.update()
@@ -124,6 +127,7 @@ majeurOuMineur.place(x=-100, y=-100)
 majeurOuMineur.current(0)
 
 
+# Force "Majeur" ou "Mineur" selon certaines tonalités
 def tonalite_change(event):
     if "Ré♭" in n.get():
         majeurOuMineur['values'] = 'Maj'
@@ -231,22 +235,62 @@ titre.place(x=duree.winfo_x() + duree.winfo_width() - titre.winfo_width(),
             y=textTitre.winfo_y())
 
 
-# Bouton GENERER
+## GÉNÉRATION DE PARTITION
+# Assigne un Thread à la génération de partition, pour que l'interface ne gèle pas
 def commande_generer():
     t = Thread(target=generer)
     t.start()
 
 
+# Génère la partition à partir de la composition générée
 def generer():
-    global composition, partitionGeneree, titreComposition
+    global partitionGeneree, titreComposition
     if titre.get("1.0", "end-1c") == "":
         popup("Le titre ne peut pas être vide!")
     else:
         titreComposition = titre.get("1.0", "end-1c")
-        composition = GenerateurPartition.generer_partition(titreComposition)
+        generer_composition()
         GenerateurPartition.generer_png(composition)
         partitionGeneree = True
         rafraichir_image()
+
+
+# Convertit la tonalité en format international, puis appelle la génération de partition
+def generer_composition():
+    global composition
+    ton = ""
+    if 'Do♯' in n.get():
+        ton = "C#"
+    elif 'Ré♭' in n.get():
+        ton = "Db"
+    elif 'Mi♭' in n.get():
+        ton = "Eb"
+    elif 'Fa♯' in n.get():
+        ton = "F#"
+    elif 'Sol♭' in n.get():
+        ton = "Gb"
+    elif 'La♭' in n.get():
+        ton = "Ab"
+    elif 'Si♭' in n.get():
+        ton = "Bb"
+    elif 'Do' in n.get():
+        ton = "C"
+    elif 'Ré' in n.get():
+        ton = "D"
+    elif 'Mi' in n.get():
+        ton = "E"
+    elif 'Fa' in n.get():
+        ton = "F"
+    elif 'Sol' in n.get():
+        ton = "G"
+    elif 'La' in n.get():
+        ton = "A"
+    elif 'Si' in n.get():
+        ton = "B"
+
+    print(ton)
+    nombre_mesures = int(g.get().removesuffix(' mesures'))
+    composition = GenerateurPartition.generer_partition(titreComposition, nombre_mesures, ton)
 
 
 imgGen = PhotoImage(file=f"{directory.ROOT_DIR}/Note_Musique.png")
@@ -282,7 +326,7 @@ format_export.current(0)
 root.update()
 
 
-## Exportation
+## EXPORTATION
 # Assigne un Thread à l'exportation, pour que l'interface ne gèle pas
 def commande_exporter():
     t = Thread(target=exporter)
@@ -299,7 +343,7 @@ def deplacer(path_location):
                    "\\%s.%s" % (composition.title, format_exp))
         message = ("Exportation en %s réussie!" % format_exp.upper())
     except PermissionError:
-        message = "Erreur dans l'exportation!"
+        message = "Erreur lors de l'exportation!"
     popup(message)
 
 
@@ -334,12 +378,14 @@ btnExporter = tk.Button(
 btnExporter.place(x=-100, y=-100)
 
 
-# Bouton Jouer
+## JOUER LA PARTITION CRÉÉE
+# Crée un Thread pour jouer la partition, afin de ne pas faire geler l'interface
 def commande_jouer():
     t = Thread(target=jouer)
     t.start()
 
 
+# Joue la partition générée, puis supprime le fichier utilisé pour la faire jouer
 def jouer():
     if partitionGeneree:
         GenerateurPartition.jouer_partition(composition)
@@ -373,8 +419,10 @@ format_export.place(x=btnExporter.winfo_x(),
                     y=btnGenerer.winfo_y() + btnGenerer.winfo_height() - format_export.winfo_height())
 
 
-# Affichage de la partition
-def rafraichir_image():  # Cette méthode est en partie tirée de https://python-forum.io/thread-7807.html
+## AFFICHAGE DE LA PARTITION
+# Change l'image de la partition affichée dans l'interface. Cette méthode est en partie tirée de
+#   https://python-forum.io/thread-7807.html
+def rafraichir_image():
     global partition_raw, label
     nom_image = titreComposition + ".png"
     partition_raw = Image.open(nom_image)
