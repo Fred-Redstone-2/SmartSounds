@@ -153,8 +153,13 @@ tonalite.bind('<<ComboboxSelected>>', tonalite_change)
 
 # Durée Combobox
 g = tk.StringVar()
-duree = ttk.Combobox(root, width=15, textvariable=g, font=("Eras Demi ITC", taille_texte))
-duree['values'] = ('4 mesures', '8 mesures', '16 mesures', '32 mesures', '64 mesures')
+duree = ttk.Combobox(
+    root,
+    width=15,
+    textvariable=g,
+    font=("Eras Demi ITC", taille_texte)
+)
+duree['values'] = ('4 mesures', '8 mesures', '16 mesures', '32 mesures', '60 mesures')
 duree['state'] = 'readonly'
 duree.place(x=tonalite.winfo_x(), y=textDuree.winfo_y())
 duree.current(0)
@@ -288,7 +293,9 @@ def generer_composition():
     elif 'Si' in n.get():
         ton = "B"
 
-    print(ton)
+    if "Min" in n2.get():
+        ton = ton.lower()
+
     nombre_mesures = int(g.get().removesuffix(' mesures'))
     composition = GenerateurPartition.generer_partition(titreComposition, nombre_mesures, ton)
 
@@ -311,7 +318,7 @@ btnGenerer.place(x=-100, y=-100)
 # Combobox de sélection du format d'exportation
 format_export = tkinter.ttk.Combobox(
     root,
-    width=6,
+    width=5,
     textvariable=n3,
     font=("Eras Demi ITC", taille_texte)
 )
@@ -385,6 +392,17 @@ def commande_jouer():
     t.start()
 
 
+## MODIFICATION DE LA PARTITION
+lab = tk.Label()
+modifier = Button(
+    root,
+    text="Modifier",
+    font=("Arial", taille_texte)
+)
+modifier.place(x=-100, y=-100)
+root.update()
+
+
 # Joue la partition générée, puis supprime le fichier utilisé pour la faire jouer
 def jouer():
     if partitionGeneree:
@@ -393,15 +411,14 @@ def jouer():
 
 
 imgJouer = PhotoImage(file=f"{directory.ROOT_DIR}/Icone_Jouer.png")
-btnJouer = Button(
+btnJouer = tk.Button(
     root,
     image=imgJouer,
-    height=150 * multiplicateurY,
-    width=150 * multiplicateurX,
+    width=modifier.winfo_width() - 7 * multiplicateurX,
+    height=70 * multiplicateurY,
     command=commande_jouer
 )
 btnJouer.place(x=-100, y=-100)
-root.update()
 
 # Ajustement boutons Générer, Jouer et Exporter
 btnGenerer.place(x=canvas.winfo_x(),
@@ -417,6 +434,8 @@ btnExporter.place(x=(btnGenerer.winfo_x() + btnGenerer.winfo_width()) / 2 +
 root.update()
 format_export.place(x=btnExporter.winfo_x(),
                     y=btnGenerer.winfo_y() + btnGenerer.winfo_height() - format_export.winfo_height())
+root.update()
+modifier.place(x=btnJouer.winfo_x(), y=btnJouer.winfo_y() + btnJouer.winfo_height() + 5 * multiplicateurY)
 
 
 ## AFFICHAGE DE LA PARTITION
@@ -426,7 +445,7 @@ def rafraichir_image():
     global partition_raw, label
     nom_image = titreComposition + ".png"
     partition_raw = Image.open(nom_image)
-    hauteur_part = int(height - 50 * multiplicateurY)
+    hauteur_part = int(height - 25 * multiplicateurY)
     largeur_part = int(partition_raw.width / partition_raw.height * hauteur_part)
     partition_raw = partition_raw.resize((largeur_part, hauteur_part))
     partition = ImageTk.PhotoImage(partition_raw)

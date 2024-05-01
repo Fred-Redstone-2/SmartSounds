@@ -50,7 +50,6 @@ def generer_partition(titre, nombre_mesures, tonalite):
     c.set_title(c.title)
     c.add_track(t1)
     c.add_track(t2)
-    print("Composition : ", LilyPond.from_Composition(c))
     return c
 
 
@@ -76,21 +75,15 @@ def jouer_partition(partition):
     play_music(midi)
 
 
-# Convertit la composition en image PNG avec LilyPond
-def generer_png(partition):
+# Convertit la partition dans le bon format pour LilyPond
+def convertir_partition(partition):
     c = LilyPond.from_Composition(partition)
     header = c.split("}")[0] + "}"
     accompagnement = c.split("\\clef bass")[1]
     melodie = c.split("{ {")[1].split("} }")[0].strip()
 
-    upper = ""
-    lower = ""
-
-    for i in melodie.split("{"):
-        upper += i.strip().replace("}", "")
-
-    for j in accompagnement.split("{"):
-        lower += j.strip().replace("}", "")
+    upper = melodie.replace("{", "").strip().replace("}", "")
+    lower = accompagnement.replace("{", "").strip().replace("}", "")
 
     staff = " {\n\\new PianoStaff << \n"
     staff += "  \\new Staff { \\clef treble " + upper + " }\n"
@@ -98,8 +91,12 @@ def generer_png(partition):
     staff += ">>\n}\n"
 
     resultat = '\\version "2.25.10"\n' + header + staff
+    return resultat
 
-    LilyPond.to_png(resultat, partition.title)
+
+# Convertit la composition en image PNG avec LilyPond
+def generer_png(partition):
+    LilyPond.to_png(convertir_partition(partition), partition.title)
 
 
 # Prépare la composition donnée à être convertie en WAV
@@ -118,5 +115,4 @@ def exporter_midi(partition):
 
 # Convertit la composition donnée en PDF par LilyPond
 def exporter_pdf(partition):
-    c = LilyPond.from_Composition(partition)
-    LilyPond.to_pdf(c, partition.title)
+    LilyPond.to_pdf(convertir_partition(partition), partition.title)
