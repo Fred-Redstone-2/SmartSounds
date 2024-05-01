@@ -46,7 +46,7 @@ def popup(texte):
     x = 800 * multiplicateurX
     y = 200 * multiplicateurY
     top.geometry("%dx%d" % (x, y))
-    top.title("")
+    top.title("Attention!")
     texte = Label(top, text=texte, font=("Eras Demi ITC", taille_texte))
     texte.config(wraplength=(x - 10 * multiplicateurX))
     texte.place(relx=0.5, rely=0.5, anchor=CENTER)
@@ -393,11 +393,16 @@ def commande_jouer():
 
 
 ## MODIFICATION DE LA PARTITION
+def modifier_partition():
+    popup("Fonction indisponible pour l'instant!")
+
+
 lab = tk.Label()
 modifier = Button(
     root,
     text="Modifier",
-    font=("Arial", taille_texte)
+    font=("Eras Demi ITC", taille_texte),
+    command=modifier_partition
 )
 modifier.place(x=-100, y=-100)
 root.update()
@@ -414,8 +419,8 @@ imgJouer = PhotoImage(file=f"{directory.ROOT_DIR}/Icone_Jouer.png")
 btnJouer = tk.Button(
     root,
     image=imgJouer,
-    width=modifier.winfo_width() - 7 * multiplicateurX,
-    height=70 * multiplicateurY,
+    width=modifier.winfo_width() - 8 * multiplicateurX,
+    height=67 * multiplicateurY,
     command=commande_jouer
 )
 btnJouer.place(x=-100, y=-100)
