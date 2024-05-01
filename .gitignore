@@ -1,4 +1,5 @@
 
-/resources/__pycache__/
-/.idea/
-/src/ca/qc/bdeb/sim204/smartsounds/__pycache__/
+/.idea
+*.pyc
+resources/__pycache__/directory.cpython-312.pyc
+.idea/inspectionProfiles/Project_Default.xml
