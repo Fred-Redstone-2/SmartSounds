@@ -359,7 +359,6 @@ def exporter():
     if partitionGeneree:
         if 'MSCZ' in n3.get():
             tkinter.messagebox.showinfo("Instruction Fichier Musecore", "Vous n'avez qu'à importer le fichier midi dans MuseScore, et tout fonctionnera parfaitement!")
-            time.sleep(3.5)
         path_location = filedialog.askdirectory()
         if 'PNG' in n3.get():
             GenerateurPartition.generer_png(composition)
@@ -462,7 +461,7 @@ def rafraichir_image():
 
 label = ttk.Label(root, image=None, padding=5)
 
-imgIcon = PhotoImage(file=f"{directory.ROOT_DIR}/Icon.png")
+imgIcon = PhotoImage(file=f"{directory.ROOT_DIR}/IconApp.png")
 photo = imgIcon
 root.wm_iconphoto(False, photo)
 root.mainloop()
