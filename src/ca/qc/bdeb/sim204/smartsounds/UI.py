@@ -385,19 +385,11 @@ btnExporter = tk.Button(
 btnExporter.place(x=-100, y=-100)
 
 
-## JOUER LA PARTITION CRÉÉE
-# Crée un Thread pour jouer la partition, afin de ne pas faire geler l'interface
-def commande_jouer():
-    t = Thread(target=jouer)
-    t.start()
-
-
 ## MODIFICATION DE LA PARTITION
 def modifier_partition():
     popup("Fonction indisponible pour l'instant!")
 
 
-lab = tk.Label()
 modifier = Button(
     root,
     text="Modifier",
@@ -406,6 +398,13 @@ modifier = Button(
 )
 modifier.place(x=-100, y=-100)
 root.update()
+
+
+## JOUER LA PARTITION CRÉÉE
+# Crée un Thread pour jouer la partition, afin de ne pas faire geler l'interface
+def commande_jouer():
+    t = Thread(target=jouer)
+    t.start()
 
 
 # Joue la partition générée, puis supprime le fichier utilisé pour la faire jouer
