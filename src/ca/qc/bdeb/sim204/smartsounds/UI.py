@@ -251,7 +251,7 @@ def commande_generer():
 def generer():
     global partitionGeneree, titreComposition
     if titre.get("1.0", "end-1c") == "":
-        popup("Le titre ne peut pas être vide!")
+        tkinter.messagebox.showinfo("Attention!", "Le titre ne peut pas être vide!")
     else:
         titreComposition = titre.get("1.0", "end-1c")
         generer_composition()
@@ -358,7 +358,7 @@ def deplacer(path_location):
 def exporter():
     if partitionGeneree:
         if 'MSCZ' in n3.get():
-            popup("Vous n'avez qu'à importer le fichier midi dans MuseScore, et tout fonctionnera parfaitement!")
+            tkinter.messagebox.showinfo("Instruction Fichier Musecore", "Vous n'avez qu'à importer le fichier midi dans MuseScore, et tout fonctionnera parfaitement!")
             time.sleep(3.5)
         path_location = filedialog.askdirectory()
         if 'PNG' in n3.get():
@@ -461,4 +461,8 @@ def rafraichir_image():
 
 
 label = ttk.Label(root, image=None, padding=5)
+
+imgIcon = PhotoImage(file=f"{directory.ROOT_DIR}/Icon.png")
+photo = imgIcon
+root.wm_iconphoto(False, photo)
 root.mainloop()
