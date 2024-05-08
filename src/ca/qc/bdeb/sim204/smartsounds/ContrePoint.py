@@ -27,10 +27,6 @@ from src.ca.qc.bdeb.sim204.smartsounds import Modulation
 Pas de motifs de trois notes répétés. 
 '''
 
-cantus_firmus = []
-contrepoint = []
-
-
 class ContrePoint:
     P1 = C = I = Tonic = Unison = 0
     m2 = Db = ii = 1
@@ -61,8 +57,10 @@ class ContrePoint:
     cf_somme = []  # cantus_firmus en somme
     cp_somme = []  # contrepoint en somme
     en_modulation = False
+    nombre_mesure = 0
 
     def __init__(self, nombre_mesure, tonalite, progression: ProgressionAccords = None):
+        self.nombre_mesure = nombre_mesure
         if progression is not None:
             self.progression = progression
         else:
@@ -114,20 +112,23 @@ class ContrePoint:
                         return False
 
             def pas_intervals_dissonants():
+                intervals = [notes.Note(self.cantus_firmus[i]).measure(notes.Note(self.cantus_firmus[i + 1])) for i in
+                             range(len(self.cantus_firmus) - 1)]
+                print("nouvels intervals: ", intervals)
                 intervals_acceptes = [self.M3, self.m3, self.P5, self.M6, self.m6, self.P8, self.M2, self.m2,
-                                      self.P1]
+                                      self.P1, self.P4, self.P8]
                 for i in range(len(intervals)):
                     intervals[i] = abs(intervals[i])
 
                 if not any([i not in intervals_acceptes for i in intervals]):
                     return True
                 else:
-
                     print("échec: pas d'intervals dissonants")
                     return False
 
             def entre_deux_et_quatre_sauts():
                 if len(leaps) in [2, 3, 4]:
+                    print("nombre de sauts correct: ", len(leaps))
                     return True
                 else:
                     print("échec: trop ou pas assez de sauts")
@@ -140,8 +141,9 @@ class ContrePoint:
                         return True
                     else:
                         self.cantus_firmus[-2] = self.progression.progression[-2][2] + self.s_cf
+                        print(self.cantus_firmus)
                         print("échec: la note finale approchée par saut")
-                        return False
+                        # return False
                 if self.contre_point:
                     self.contre_point[-2] = self.progression.progression[-2][0] + self.s_cf
                     return True
@@ -160,7 +162,7 @@ class ContrePoint:
                         tout_verifie = True
                     else:
 
-                        for i in range(len(intervals) - 1):
+                        for i in range(len(intervals)):
 
                             if intervals[i] == -self.m7:  # augementer un M2 au lieu de diminuer un m7
                                 n = self.cantus_firmus[i]
@@ -169,29 +171,32 @@ class ContrePoint:
                                 temp = Core_Notes.augment(temp)
                                 apres_n = Core_Notes.reduce_accidentals(temp) + "-" + str(int(n[-1]) + 1)
                                 self.cantus_firmus[i + 1] = apres_n
-
+                                print("note changé: ", apres_n, "note initiale: ", n, "interval: ", -self.m7)
                             elif intervals[i] == -self.M7:  # augementer un m2 au lieu de diminuer un M7
                                 n = self.cantus_firmus[i]
                                 temp = Core_Notes.augment(n[0])
                                 apres_n = Core_Notes.reduce_accidentals(temp) + "-" + str(int(n[-1]) + 1)
                                 self.cantus_firmus[i + 1] = apres_n
-
+                                print("note changé: ", apres_n, "note initiale: ", n, "interval: ", -self.M7)
                             elif intervals[i] == self.m7:
                                 n = self.cantus_firmus[i]
                                 temp = Core_Notes.diminish(n[0])
                                 temp = Core_Notes.diminish(temp)
                                 apres_n = Core_Notes.reduce_accidentals(temp) + "-" + str(int(n[-1]) - 1)
                                 self.cantus_firmus[i + 1] = apres_n
+                                print("note changé: ", apres_n, "note initiale: ", n, "interval: ", self.m7)
 
                             elif intervals[i] == self.M7:
                                 n = self.cantus_firmus[i]
                                 temp = Core_Notes.diminish(n[0])
                                 apres_n = Core_Notes.reduce_accidentals(temp) + "-" + str(int(n[-1]) - 1)
                                 self.cantus_firmus[i + 1] = apres_n
+                                print("note changé: ", apres_n, "note initiale: ", n, "interval : ", self.M7)
 
                             else:
-                                print("échec d'analyse")
+                                print("méthode change de direction")
                                 tout_verifie = True
+                                print(self.cantus_firmus, " après changé de direction")
                 return tout_verifie
 
             def pas_de_sauts_plus_grand_que_octave():
@@ -217,11 +222,13 @@ class ContrePoint:
                         compteur = 0
                 return True
 
-            verifiee = (pas_de_repetition() and entre_deux_et_quatre_sauts()
-                        and note_finale_aprochee_par_pas() and sauts_trop_large_changer_de_direction()
-                        and pas_de_sauts_plus_grand_que_octave() and pas_de_mouvement_repete()
-                        and pas_intervals_dissonants()
-                        )
+            verifiee = (
+                    pas_de_repetition() and entre_deux_et_quatre_sauts()
+                    and
+                    note_finale_aprochee_par_pas() and sauts_trop_large_changer_de_direction()
+                    and pas_de_sauts_plus_grand_que_octave() and pas_de_mouvement_repete()
+                    and pas_intervals_dissonants()
+            )
 
         print("cantus_firmus après changé: ", self.cantus_firmus)
         print("contrepoint après changé: ", self.contre_point)
@@ -299,27 +306,34 @@ No parallel three-note chains.
         self.m_cp = mod[1]
         return self.m_cf, self.m_cp
 
-    def en_tout(self):
-        c1 = ContrePoint.verifier_melodie(self)
-        c2 = ContrePoint.modulation(self)
-        c3 = ContrePoint.verifier_melodie(self)
-        self.cf_somme = c1[0] + c2[0] + c3[0]
-        self.cp_somme = c1[1] + c2[1] + c3[1]
-        print(self.cf_somme)
-        print(self.cp_somme)
-        return self.cf_somme, self.cp_somme
+    def en_tout(self): #test de changement de nombre de mesures
+        self.cf_somme.clear()
+        self.cp_somme.clear()
+        print(self.nombre_mesure, " nombre mesures")
+        if self.nombre_mesure <= 4:
+            for i in range(int(self.nombre_mesure / 2)):
+                c1 = ContrePoint.verifier_first_specie(self)
+                self.cf_somme += c1[0]
+                self.cp_somme += c1[1]
+            return [self.cf_somme, self.cp_somme]
 
-'''
-        if verifiee:
-            global cantus_firmus, contrepoint
-            cantus_firmus = self.cantus_firmus
-            contrepoint = self.contre_point
+        else:
+            for i in range(int(self.nombre_mesure / 4)):
+                c1 = ContrePoint.verifier_first_specie(self)
+                self.cf_somme += c1[0]
+                self.cp_somme += c1[1]
 
+            for i in range(int(self.nombre_mesure / 8)):
+                c2 = ContrePoint.modulation(self)
+                self.cf_somme += c2[0]
+                self.cp_somme += c2[1]
 
-def retourne_cantus_firmus():
-    return cantus_firmus
+            for i in range(int(self.nombre_mesure / 8)):
+                c3 = ContrePoint.verifier_first_specie(self)
+                self.cf_somme += c3[0]
+                self.cp_somme += c3[1]
 
+            print(self.cf_somme)
+            print(len(self.cf_somme))
 
-def retourne_contrepoint():
-    return contrepoint
-'''
+            return [self.cf_somme, self.cp_somme]

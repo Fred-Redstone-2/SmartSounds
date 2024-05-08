@@ -2,6 +2,7 @@ import random
 import Accord
 import mingus.core.chords as chords
 
+
 class ProgressionAccords:
     progression = []
     nombreMesure = 8  # possible de changer
@@ -26,6 +27,21 @@ class ProgressionAccords:
             self.Accord = Accord.Accord(self.tonalite)
             self.Accord.genererAccord()
 
+    def generer_preogression_melodie(self):
+        ProgressionAccords.vider_list(self)
+
+        # 1 accord au début, 2 à la fin, le nombre d'accords au milieu dépends de nombre_mesure saisi dans l'interface
+        self.progression.append(self.Accord.progression_accord_debut[0])
+        nb_mesure_milieu = self.nombreMesure - 3
+        for i in range(nb_mesure_milieu):
+            accord = random.choice(self.Accord.progression_accord_milieu)
+            self.progression.append(accord)
+
+        for i in self.Accord.progression_accord_fin:
+            self.progression.append(i)
+        print("class ProgressionAccord: generer progression ", self.progression)
+        return self.progression
+
     def generer_progression_accords(self):
         verifiee = False
 
@@ -35,7 +51,6 @@ class ProgressionAccords:
             # 1 accord au début, 5 au milieu, 2 à la fin
             self.progression.append(self.Accord.progression_accord_debut[0])
             for i in range(5):
-
                 accord = random.choice(self.Accord.progression_accord_milieu)
                 self.progression.append(accord)
 
@@ -55,7 +70,6 @@ class ProgressionAccords:
             # 1 accord au début, 6 au milieu, 1 à la fin
             self.progression.append(self.Accord.progression_accord_debut)
             for i in range(6):
-
                 accord = random.choice(self.Accord.progression_accord_milieu)
                 self.progression.append(accord)
 

@@ -20,6 +20,7 @@ class Accord:
         print("class Accords: accords: ")
         # majeur
         tonique = chords.tonic(self.tonalite)
+
         self.progression_accord_debut = [tonique]
         for i in chords.triads(self.tonalite):
             self.progression_accord_milieu.append(i)
