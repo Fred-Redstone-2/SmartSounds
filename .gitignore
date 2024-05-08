@@ -3,3 +3,4 @@
 *.pyc
 resources/__pycache__/directory.cpython-312.pyc
 .idea/inspectionProfiles/Project_Default.xml
+/out

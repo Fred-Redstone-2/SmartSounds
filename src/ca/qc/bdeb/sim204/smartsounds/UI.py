@@ -1,6 +1,6 @@
 import os
-import time
 from threading import *
+from copy import deepcopy
 
 import tkinter
 import tkinter as tk
@@ -13,6 +13,7 @@ from PIL import Image, ImageTk
 
 from resources import directory
 import GenerateurPartition
+import ModificationPartition
 
 ## VARIABLES GÉNÉRALES
 composition = Composition()
@@ -251,7 +252,7 @@ def commande_generer():
 def generer():
     global partitionGeneree, titreComposition
     if titre.get("1.0", "end-1c") == "":
-        tkinter.messagebox.showinfo("Attention!", "Le titre ne peut pas être vide!")
+        tk.messagebox.showinfo("Attention!", "Le titre ne peut pas être vide!")
     else:
         titreComposition = titre.get("1.0", "end-1c")
         generer_composition()
@@ -351,14 +352,15 @@ def deplacer(path_location):
         message = ("Exportation en %s réussie!" % format_exp.upper())
     except PermissionError:
         message = "Erreur lors de l'exportation!"
-    popup(message)
+    tk.messagebox.showinfo("Statut de l'exportation", message)
 
 
 # Choisit, selon le format sélectionné, quelle méthode exécuter pour exporter la partition dans le bon format
 def exporter():
     if partitionGeneree:
         if 'MSCZ' in n3.get():
-            tkinter.messagebox.showinfo("Instruction Fichier Musecore", "Vous n'avez qu'à importer le fichier midi dans MuseScore, et tout fonctionnera parfaitement!")
+            tk.messagebox.showinfo("Instruction Fichier Musecore",
+                                   "Vous n'avez qu'à importer le fichier midi dans MuseScore, et tout fonctionnera parfaitement!")
         path_location = filedialog.askdirectory()
         if 'PNG' in n3.get():
             GenerateurPartition.generer_png(composition)
@@ -385,8 +387,20 @@ btnExporter.place(x=-100, y=-100)
 
 
 ## MODIFICATION DE LA PARTITION
+def verifier_composition():
+    global composition
+    if ModificationPartition.composition_changee:
+        composition = ModificationPartition.get_composition()
+        GenerateurPartition.generer_png(composition)
+        rafraichir_image()
+    root.after(2000, verifier_composition)
+
+
 def modifier_partition():
-    popup("Fonction indisponible pour l'instant!")
+    if partitionGeneree:
+        ModificationPartition.launch(root, 800 * multiplicateurX, 270 * multiplicateurY, taille_texte, composition,
+                                     deepcopy(composition))
+        root.after(5000, verifier_composition)
 
 
 modifier = Button(
