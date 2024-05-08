@@ -17,6 +17,7 @@ class Rythme:
 
     # generer durée des notes par mesure
     def generer_rythme(self):
+        Rythme.vider_list(self)
         i = 0
         while i < self.mesure[0]:
             choix = random.choice(self.choix_notes)
@@ -28,3 +29,7 @@ class Rythme:
                 self.list_duree_note.append(choix)
 
         print("Class Rythme; list_duree_note: ", self.list_duree_note)
+
+    def vider_list(self):
+        if len(self.list_duree_note) != 0:
+            self.list_duree_note = []

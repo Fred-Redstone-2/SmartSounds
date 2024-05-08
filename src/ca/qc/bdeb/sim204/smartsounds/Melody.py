@@ -13,8 +13,8 @@ class Melody:
     propabilite = [3 / 10, 3 / 10, 1 / 5, 1 / 5]
     combinaison_duree_note = []
 
-    def __init__(self, nombre_mesure, tonalite, mesure_utilisateur):
-        self.progression = ProgressionAccords.ProgressionAccords(nombre_mesure, tonalite)
+    def __init__(self, tonalite, nombre_mesure, mesure_utilisateur):
+        self.progression = ProgressionAccords.ProgressionAccords(tonalite, nombre_mesure)
 
         self.rythme = Rythme.Rythme(mesure_utilisateur)
         self.rythme.generer_rythme()
@@ -23,8 +23,8 @@ class Melody:
         print("nombre de note par mesure: ", self.nombre_notes_par_mesure)
 
     def generer_melodie(self):
-
-        self.progression.generer_progression_accords()
+        Melody.vider_list(self)
+        self.progression.generer_preogression_melodie()
         for x in range(len(self.progression.progression)):
             loi_de_probabilite = []
             accord = self.progression.progression[x]
@@ -41,7 +41,9 @@ class Melody:
         self.list_notes[-1] = self.progression.progression[-1][0]
         print("class Melody : ", self.list_notes)
         print("nb de notes totales : ", len(self.list_notes))
-        return self.list_notes
+
+        melodie_temps = Melody.combinaison_melodie_temps(self)
+        return melodie_temps, self.progression.progression
 
     def combinaison_melodie_temps(self):
         combinaison = []
@@ -49,13 +51,13 @@ class Melody:
         for i in range(len(self.rythme.list_duree_note)):
             self.rythme.list_duree_note[i] = int(4 / self.rythme.list_duree_note[i])
         for i in range(len(self.list_notes)):
-            if j >= 2:
+            if j >= len(self.rythme.list_duree_note):
                 j = 0
             temp = [self.list_notes[i]]
             note_duree = [self.rythme.list_duree_note[j], temp]
             combinaison.append(note_duree)
             j = j + 1
-
+        print(combinaison)
         return combinaison
 
     def diviser_mesure(self):
@@ -78,3 +80,7 @@ class Melody:
 
                     temp = []
         print(combinaison_mesure)
+
+    def vider_list(self):
+        if len(self.list_notes) != 0:
+            self.list_notes = []
