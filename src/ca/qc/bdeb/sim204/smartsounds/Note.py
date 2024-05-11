@@ -1,8 +1,6 @@
 import mingus.core.value as valeur
-'''
-note
 
-'''
+
 class Note:
     nom = ""
     durationStr = valeur.whole
@@ -15,4 +13,3 @@ class Note:
 
     def __repr__(self):  # pour changer
         return "<{0}>".format(self.nom)
-
