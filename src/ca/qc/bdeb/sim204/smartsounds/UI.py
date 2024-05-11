@@ -160,7 +160,7 @@ duree = ttk.Combobox(
     textvariable=g,
     font=("Eras Demi ITC", taille_texte)
 )
-duree['values'] = ('4 mesures', '8 mesures', '16 mesures', '32 mesures', '60 mesures')
+duree['values'] = ('4 mesures', '8 mesures', '16 mesures', '32 mesures')
 duree['state'] = 'readonly'
 duree.place(x=tonalite.winfo_x(), y=textDuree.winfo_y())
 duree.current(0)
@@ -398,7 +398,7 @@ def verifier_composition():
 
 def modifier_partition():
     if partitionGeneree:
-        ModificationPartition.launch(root, 800 * multiplicateurX, 270 * multiplicateurY, taille_texte, composition,
+        ModificationPartition.launch(root, multiplicateurX, multiplicateurY, taille_texte, composition,
                                      deepcopy(composition))
         root.after(5000, verifier_composition)
 

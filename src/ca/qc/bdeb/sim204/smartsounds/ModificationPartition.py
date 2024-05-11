@@ -321,7 +321,7 @@ def confirmer():
 def launch(root, x, y, taille_texte, comp, base_comp):
     global portee, mesure, note, no_note, type_note
     top = Toplevel(root)
-    top.geometry("%dx%d" % (x, y))
+    top.geometry("%dx%d" % (800 * x, 270 * y))
     top.title("Modification de partition")
 
     btn = Button(
@@ -397,20 +397,33 @@ def launch(root, x, y, taille_texte, comp, base_comp):
     base_text_y = 10
     base_x_btn = 420
     base_y_btn = 30
+    espacement = 50 * y
+
+    portee.place(x=text_x, y=base_text_y)
+    mesure.place(x=text_x, y=base_text_y + espacement)
+    note.place(x=text_x, y=base_text_y + 2 * espacement)
+    no_note.place(x=text_x, y=base_text_y + 3 * espacement)
+    type_note.place(x=text_x, y=base_text_y + 4 * espacement)
     btn.place(x=base_x_btn, y=base_y_btn)
-    btn2.place(x=base_x_btn + 80, y=base_y_btn)
     btn3.place(x=base_x_btn, y=base_y_btn + 40)
-    btn4.place(x=base_x_btn + 80, y=base_y_btn + 40)
     btn5.place(x=base_x_btn, y=base_y_btn + 80)
-    btn6.place(x=base_x_btn + 80, y=base_y_btn + 80)
     btn7.place(x=base_x_btn + 1, y=base_y_btn + 120)
     btn8.place(x=base_x_btn + 1, y=base_y_btn + 160)
     btn9.place(x=base_x_btn + 1, y=base_y_btn + 200)
-    portee.place(x=text_x, y=base_text_y)
-    mesure.place(x=text_x, y=base_text_y + 50)
-    note.place(x=text_x, y=base_text_y + 100)
-    no_note.place(x=text_x, y=base_text_y + 150)
-    type_note.place(x=text_x, y=base_text_y + 200)
+    top.update()
+
+    base_x_btn = type_note.winfo_x() + type_note.winfo_width() + 10 * x
+    espacement_x = 5 * x
+    espacement_y = 40 * y
+    btn.place(x=base_x_btn, y=base_y_btn)
+    btn2.place(x=base_x_btn + btn.winfo_width() + espacement_x, y=base_y_btn)
+    btn3.place(x=base_x_btn, y=base_y_btn + espacement_y)
+    btn4.place(x=base_x_btn + btn.winfo_width() + espacement_x, y=base_y_btn + espacement_y)
+    btn5.place(x=base_x_btn, y=base_y_btn + 2 * espacement_y)
+    btn6.place(x=base_x_btn + btn.winfo_width() + espacement_x, y=base_y_btn + 2 * espacement_y)
+    btn7.place(x=base_x_btn + 1, y=base_y_btn + 3 * espacement_y)
+    btn8.place(x=base_x_btn + 1, y=base_y_btn + 4 * espacement_y)
+    btn9.place(x=base_x_btn + 1, y=base_y_btn + 5 * espacement_y)
 
 
 def get_composition_changee():
