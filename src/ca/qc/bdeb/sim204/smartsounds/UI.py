@@ -403,14 +403,19 @@ def modifier_partition():
         root.after(5000, verifier_composition)
 
 
+imgModif = PhotoImage(f"{directory.ROOT_DIR}/1x1.png")
+
 modifier = Button(
     root,
     text="Modifier",
     font=("Eras Demi ITC", taille_texte),
+    width=208 * multiplicateurX,
+    height=55 * multiplicateurY,
+    image=imgModif,
+    compound=tk.LEFT,
     command=modifier_partition
 )
 modifier.place(x=-100, y=-100)
-root.update()
 
 
 ## JOUER LA PARTITION CRÉÉE
@@ -431,8 +436,8 @@ imgJouer = PhotoImage(file=f"{directory.ROOT_DIR}/Icone_Jouer.png")
 btnJouer = tk.Button(
     root,
     image=imgJouer,
-    width=modifier.winfo_width() - 8 * multiplicateurX,
-    height=67 * multiplicateurY,
+    width=210 * multiplicateurX,
+    height=80 * multiplicateurY,
     command=commande_jouer
 )
 btnJouer.place(x=-100, y=-100)
@@ -452,7 +457,8 @@ root.update()
 format_export.place(x=btnExporter.winfo_x(),
                     y=btnGenerer.winfo_y() + btnGenerer.winfo_height() - format_export.winfo_height())
 root.update()
-modifier.place(x=btnJouer.winfo_x(), y=btnJouer.winfo_y() + btnJouer.winfo_height() + 5 * multiplicateurY)
+modifier.place(x=btnJouer.winfo_x(),
+               y=btnGenerer.winfo_y() + btnGenerer.winfo_height() - modifier.winfo_height())
 
 
 ## AFFICHAGE DE LA PARTITION
