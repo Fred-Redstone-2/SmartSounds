@@ -1,9 +1,9 @@
 import mingus.containers.note as notes
-from src.ca.qc.bdeb.sim204.smartsounds import ProgressionAccords
-import Rythme
 import random
 from mingus.core import notes as Core_Notes
-from src.ca.qc.bdeb.sim204.smartsounds import Modulation
+import Modulation
+import ProgressionAccords
+import Rythme
 
 '''
 1.Pas de notes répétées dans le cantus firmus (accepter 2 répétition). 

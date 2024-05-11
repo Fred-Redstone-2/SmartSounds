@@ -1,11 +1,12 @@
 import pygame
+import random
 from mingus.containers import *
 import mingus.extra.lilypond as LilyPond
 from mingus.midi import midi_file_out
+
 import ConvertisseurMidi
 import ContrePoint
 import Melody
-import random
 from resources import directory
 
 from_Track_Orig = LilyPond.from_Track
