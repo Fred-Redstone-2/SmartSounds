@@ -11,7 +11,7 @@
 3. Télécharger la [plus récente version du programme](https://github.com/Fred-Redstone-2/SmartSounds/releases)
 4. Extraire le fichier à un certain endroit, vous ne pourrez PAS déplacer le dossier résultant par la suite!
 5. Ajouter le dossier endroit\d'extraction\SmartSounds\\_internal\resources à votre $PATH système
-6. Vous pouvez lancer le code par le fichier SmartSounds.exe ! (Si vous déplacez ce fichier, le programme sera inutilisable)
+6. Vous pouvez lancer le code par le fichier SmartSounds.exe !
 
 # ATTENTION
 Vous devez être administrateur ou avoir le nom et mot de passe d'administrateur. Sinon, vous ne pourrez PAS lancer le programme. <br />
