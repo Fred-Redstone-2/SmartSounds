@@ -5,6 +5,10 @@
 
 <div align='left'>
 
+# Table des matières
+- [Versions du programme](https://github.com/Fred-Redstone-2/SmartSounds/releases)
+- [Wiki du programme](https://github.com/Fred-Redstone-2/SmartSounds/wiki)
+
 # ⚠️ ATTENTION
 Vous devez être administrateur ou avoir le nom et mot de passe d'administrateur. Sinon, vous ne pourrez PAS lancer le programme. <br>
 Ne déplacez pas le fichier exécutable, sinon le programme sera inutilisable.
