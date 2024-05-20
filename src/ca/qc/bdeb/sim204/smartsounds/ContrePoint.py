@@ -27,7 +27,6 @@ import Rythme
 Pas de motifs de trois notes répétés. 
 '''
 
-
 class ContrePoint:
     P1 = C = I = Tonic = Unison = 0
     m2 = Db = ii = 1
@@ -93,24 +92,29 @@ class ContrePoint:
             self.contre_point = ContrePoint.creer_list_notes(self, "contre_point")
             intervals = [notes.Note(self.cantus_firmus[i]).measure(notes.Note(self.cantus_firmus[i + 1])) for i in
                          range(len(self.cantus_firmus) - 1)]
+            print("list_intervals: ", intervals)
 
             leaps = [i for i in intervals if abs(i) > self.Leap]
+            print("leaps: ", leaps)
 
             def pas_de_repetition():
                 if self.cantus_firmus:
                     if intervals.count(0) <= 2:  # accepter 2 répétition
                         return True
                     else:
+                        print("échec: trop de répétition dans cantus-firmus")
                         return False
                 if self.contre_point:
                     if intervals.count(0) <= 3:
                         return True
                     else:
+                        print("échec: trop de répétition dans contrepoint")
                         return False
 
             def pas_intervals_dissonants():
                 intervals = [notes.Note(self.cantus_firmus[i]).measure(notes.Note(self.cantus_firmus[i + 1])) for i in
                              range(len(self.cantus_firmus) - 1)]
+                print("nouvels intervals: ", intervals)
                 intervals_acceptes = [self.M3, self.m3, self.P5, self.M6, self.m6, self.P8, self.M2, self.m2,
                                       self.P1, self.P4, self.P8]
                 for i in range(len(intervals)):
@@ -119,13 +123,15 @@ class ContrePoint:
                 if not any([i not in intervals_acceptes for i in intervals]):
                     return True
                 else:
+                    print("échec: pas d'intervals dissonants")
                     return False
 
             def entre_deux_et_quatre_sauts():
                 if len(leaps) in [2, 3, 4]:
+                    print("nombre de sauts correct: ", len(leaps))
                     return True
                 else:
-                    return False
+                    print("échec: trop ou pas assez de sauts")
 
             def note_finale_aprochee_par_pas():
                 if self.en_modulation:
@@ -135,6 +141,8 @@ class ContrePoint:
                         return True
                     else:
                         self.cantus_firmus[-2] = self.progression.progression[-2][2] + self.s_cf
+                        print(self.cantus_firmus)
+                        print("échec: la note finale approchée par saut")
                         # return False
                 if self.contre_point:
                     self.contre_point[-2] = self.progression.progression[-2][0] + self.s_cf
@@ -163,26 +171,32 @@ class ContrePoint:
                                 temp = Core_Notes.augment(temp)
                                 apres_n = Core_Notes.reduce_accidentals(temp) + "-" + str(int(n[-1]) + 1)
                                 self.cantus_firmus[i + 1] = apres_n
+                                print("note changé: ", apres_n, "note initiale: ", n, "interval: ", -self.m7)
                             elif intervals[i] == -self.M7:  # augementer un m2 au lieu de diminuer un M7
                                 n = self.cantus_firmus[i]
                                 temp = Core_Notes.augment(n[0])
                                 apres_n = Core_Notes.reduce_accidentals(temp) + "-" + str(int(n[-1]) + 1)
                                 self.cantus_firmus[i + 1] = apres_n
+                                print("note changé: ", apres_n, "note initiale: ", n, "interval: ", -self.M7)
                             elif intervals[i] == self.m7:
                                 n = self.cantus_firmus[i]
                                 temp = Core_Notes.diminish(n[0])
                                 temp = Core_Notes.diminish(temp)
                                 apres_n = Core_Notes.reduce_accidentals(temp) + "-" + str(int(n[-1]) - 1)
                                 self.cantus_firmus[i + 1] = apres_n
+                                print("note changé: ", apres_n, "note initiale: ", n, "interval: ", self.m7)
 
                             elif intervals[i] == self.M7:
                                 n = self.cantus_firmus[i]
                                 temp = Core_Notes.diminish(n[0])
                                 apres_n = Core_Notes.reduce_accidentals(temp) + "-" + str(int(n[-1]) - 1)
                                 self.cantus_firmus[i + 1] = apres_n
+                                print("note changé: ", apres_n, "note initiale: ", n, "interval : ", self.M7)
 
                             else:
+                                print("méthode change de direction")
                                 tout_verifie = True
+                                print(self.cantus_firmus, " après changé de direction")
                 return tout_verifie
 
             def pas_de_sauts_plus_grand_que_octave():
@@ -215,6 +229,9 @@ class ContrePoint:
                     and pas_de_sauts_plus_grand_que_octave() and pas_de_mouvement_repete()
                     and pas_intervals_dissonants()
             )
+
+        print("cantus_firmus après changé: ", self.cantus_firmus)
+        print("contrepoint après changé: ", self.contre_point)
         return self.cantus_firmus, self.contre_point
 
     '''
@@ -231,6 +248,7 @@ No parallel three-note chains.
             tout = ContrePoint.verifier_melodie(self)
             self.cantus_firmus = tout[0]
             self.contre_point = tout[1]
+            print(self.cantus_firmus, " cantus_firmu")
             interval_vertical = [notes.Note(self.contre_point[i]).measure(notes.Note(self.cantus_firmus[i])) for i in
                                  range(len(self.cantus_firmus) - 1)]
             i_v = interval_vertical
@@ -245,6 +263,7 @@ No parallel three-note chains.
             def pas_interval_superieur_a_12():
                 for i in range(len(interval_vertical)):
                     if interval_vertical[i] >= (self.P8 + self.P5):
+                        print("contient interval plus grand que maj12")
                         return False
                 return True
 
@@ -252,6 +271,7 @@ No parallel three-note chains.
                 for i in range(len(interval_vertical) - 1):
                     if (interval_vertical[i] == self.P5 and interval_vertical[i + 1] == self.P5) or (
                             interval_vertical[i] == self.P8 and interval_vertical[i + 1] == self.P8):
+                        print("contient p5 ou p8")
                         return False
                 return True
 
@@ -259,18 +279,22 @@ No parallel three-note chains.
                 for i in range(len(interval_vertical) - 2):
                     if interval_vertical[i] == interval_vertical[i + 1] and interval_vertical[i + 1] == \
                             interval_vertical[i + 2] and interval_vertical[i + 2] == interval_vertical[i + 3]:
+                        print("plus que trois intervals répétés et consécutifs")
                         return False
                 return True
 
             def pas_de_dissonance_verticale():
                 dissonance = [self.m2, self.M2, self.d5, self.m7, self.M7]
                 if any(i in interval_vertical for i in dissonance):
+                    print("contient interval dissonant")
                     return False
                 return True
 
             check_voice_cross()
+            print("interval_vertical = ", interval_vertical)
             verifiee = (
                     pas_de_dissonance_verticale() and pas_interval_superieur_a_12() and pas_interval_parfait_paralle() and pas_de_motifs_de_trois_intervals_repetes())
+        print("verifiee=", verifiee)
 
         return self.cantus_firmus, self.contre_point
 
@@ -282,9 +306,10 @@ No parallel three-note chains.
         self.m_cp = mod[1]
         return self.m_cf, self.m_cp
 
-    def en_tout(self):  # test de changement de nombre de mesures
+    def en_tout(self): #test de changement de nombre de mesures
         self.cf_somme.clear()
         self.cp_somme.clear()
+        print(self.nombre_mesure, " nombre mesures")
         if self.nombre_mesure <= 4:
             for i in range(int(self.nombre_mesure / 2)):
                 c1 = ContrePoint.verifier_first_specie(self)
@@ -307,5 +332,8 @@ No parallel three-note chains.
                 c3 = ContrePoint.verifier_first_specie(self)
                 self.cf_somme += c3[0]
                 self.cp_somme += c3[1]
+
+            print(self.cf_somme)
+            print(len(self.cf_somme))
 
             return [self.cf_somme, self.cp_somme]

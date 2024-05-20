@@ -19,6 +19,7 @@ class ProgressionAccords:
             accords = chords.triads(self.tonalite)
 
             self.Accord.generer_acoords_modulation(self.pivot, accords)
+            print("constructeur pour modulation")
         elif pivot is None:
             self.nombreMesure = nombre_mesure
             self.tonalite = tonalite
@@ -38,6 +39,7 @@ class ProgressionAccords:
 
         for i in self.Accord.progression_accord_fin:
             self.progression.append(i)
+        print("class ProgressionAccord: generer progression ", self.progression)
         return self.progression
 
     def generer_progression_accords(self):
@@ -56,6 +58,7 @@ class ProgressionAccords:
                 self.progression.append(i)
 
             verifiee = ProgressionAccords.verifier(self)
+        print("class ProgressionAccord: generer progression ", self.progression)
         return self.progression
 
     def generer_progression_accords_modulation(self):
@@ -73,6 +76,8 @@ class ProgressionAccords:
             self.progression.append(self.Accord.progression_accord_fin)
 
             verifiee = ProgressionAccords.verifier(self)
+
+        print("class ProgressionAccord: progression modulation ", self.progression)
         return self.progression
 
     def vider_list(self):
@@ -82,6 +87,7 @@ class ProgressionAccords:
     def verifier(self):
 
         compteur = 0
+        print(self.progression)
         for i in range(len(self.progression) - 1):
             compteur = 0
 
