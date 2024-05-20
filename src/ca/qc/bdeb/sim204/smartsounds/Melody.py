@@ -20,8 +20,6 @@ class Melody:
         self.rythme.generer_rythme()
         self.nombre_notes_par_mesure = len(self.rythme.list_duree_note)
 
-        print("nombre de note par mesure: ", self.nombre_notes_par_mesure)
-
     def generer_melodie(self):
         Melody.vider_list(self)
         self.progression.generer_preogression_melodie()
@@ -39,8 +37,6 @@ class Melody:
                 self.list_notes.append(resultat[0])
 
         self.list_notes[-1] = self.progression.progression[-1][0]
-        print("class Melody : ", self.list_notes)
-        print("nb de notes totales : ", len(self.list_notes))
 
         melodie_temps = Melody.combinaison_melodie_temps(self)
         return melodie_temps, self.progression.progression
@@ -56,13 +52,10 @@ class Melody:
             temp = [self.list_notes[i]]
             note_duree = [self.rythme.list_duree_note[j], temp]
             combinaison.append(note_duree)
-            j = j + 1
-        print(combinaison)
         return combinaison
 
     def diviser_mesure(self):
         self.combinaison_duree_note = Melody.combinaison_melodie_temps(self)
-        print(self.combinaison_duree_note)
         combinaison_mesure = []
         nb_notes_par_mesure = len(self.rythme.list_duree_note)
 
@@ -79,7 +72,6 @@ class Melody:
                     combinaison_mesure.append(temp)
 
                     temp = []
-        print(combinaison_mesure)
 
     def vider_list(self):
         if len(self.list_notes) != 0:
