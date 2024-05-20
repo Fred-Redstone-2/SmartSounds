@@ -40,19 +40,6 @@ root.resizable(False, False)
 root.geometry("%dx%d" % (width, height))
 
 
-# Fenêtre affichant un message donné. Cette méthode est tirée de
-#   https://www.tutorialspoint.com/how-do-i-create-a-popup-window-in-tkinter
-def popup(texte):
-    top = Toplevel(root)
-    x = 800 * multiplicateurX
-    y = 200 * multiplicateurY
-    top.geometry("%dx%d" % (x, y))
-    top.title("Attention!")
-    texte = Label(top, text=texte, font=("Eras Demi ITC", taille_texte))
-    texte.config(wraplength=(x - 10 * multiplicateurX))
-    texte.place(relx=0.5, rely=0.5, anchor=CENTER)
-
-
 # Supprime le fichier donné
 def supprimer(fichier):
     try:

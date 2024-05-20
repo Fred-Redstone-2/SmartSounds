@@ -28,6 +28,8 @@ class Rythme:
             else:
                 self.list_duree_note.append(choix)
 
+        print("Class Rythme; list_duree_note: ", self.list_duree_note)
+
     def vider_list(self):
         if len(self.list_duree_note) != 0:
             self.list_duree_note = []

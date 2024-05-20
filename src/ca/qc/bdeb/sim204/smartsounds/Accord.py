@@ -17,6 +17,7 @@ class Accord:
         self.tonalite = tonalite
 
     def genererAccord(self):
+        print("class Accords: accords: ")
         # majeur
         tonique = chords.tonic(self.tonalite)
 
