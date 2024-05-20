@@ -72,15 +72,10 @@ textTonalite = tk.Label(root, text="Tonalité :", font=("Eras Demi ITC", taille_
 textTonalite.place(x=canvas.winfo_x() + 50 * multiplicateurX, y=canvas.winfo_y() + 50 * multiplicateurY)
 root.update()
 
-# Tempo Label
-textTempo = tk.Label(root, text="Tempo :", font=("Eras Demi ITC", taille_texte), bg="white")
-textTempo.place(x=textTonalite.winfo_x(),
-                y=textTonalite.winfo_y() + textTonalite.winfo_height() + 75 * multiplicateurY)
-root.update()
-
 # Durée Label
 textDuree = tk.Label(root, text="Durée :", font=("Eras Demi ITC", taille_texte), bg="white")
-textDuree.place(x=textTonalite.winfo_x(), y=textTempo.winfo_y() + textTempo.winfo_height() + 75 * multiplicateurY)
+textDuree.place(x=textTonalite.winfo_x(),
+                y=textTonalite.winfo_y() + textTonalite.winfo_height() + 75 * multiplicateurY)
 
 # Tonalité Combobox
 n = tk.StringVar()
@@ -169,62 +164,6 @@ root.update()
 # Ajuster Majeur/Mineur combobox
 majeurOuMineur.place(x=duree.winfo_x() + duree.winfo_width() - majeurOuMineur.winfo_width(),
                      y=textTonalite.winfo_y())
-
-# BPM Slider
-current_value = tk.IntVar()
-
-
-def get_current_value():
-    return '{: .0f}'.format(current_value.get())
-
-
-value_label = ttk.Label(
-    root,
-    text=get_current_value(),
-    font=("Eras Demi ITC", taille_texte),
-    background='white'
-)
-
-bpm_label = ttk.Label(
-    root,
-    text="bpm",
-    font=("Eras Demi ITC", taille_texte - int(1 * multiplicateurX)),
-    background='white'
-)
-
-
-def slider_changed(event):
-    value_label.configure(text=get_current_value())
-
-
-temposlider = ttk.Scale(
-    root,
-    from_=30,
-    to=220,
-    orient='horizontal',  # vertical
-    command=slider_changed,
-    length=duree.winfo_width(),
-    variable=current_value
-)
-temposlider.grid(
-    column=1,
-    row=0,
-    sticky='we'
-)
-temposlider.set(100)
-root.update()
-
-temposlider.place(x=tonalite.winfo_x(), y=textTempo.winfo_y() + textTempo.winfo_height() - temposlider.winfo_height())
-
-value_label.place(x=-100, y=-100)
-bpm_label.place(x=-100, y=-100)
-root.update()
-
-value_label.place(x=temposlider.winfo_x() + temposlider.winfo_width() / 2 - value_label.winfo_width(),
-                  y=temposlider.winfo_y() - value_label.winfo_height())
-bpm_label.place(x=temposlider.winfo_x() + temposlider.winfo_width() / 2,
-                y=temposlider.winfo_y() - value_label.winfo_height())
-temposlider.set(30)
 
 # Titre de la partition
 textTitre = tk.Label(root, text="Titre :", font=("Eras Demi ITC", taille_texte), bg="white")
@@ -407,9 +346,9 @@ imgModif = PhotoImage(f"{directory.ROOT_DIR}/1x1.png")
 
 modifier = Button(
     root,
-    text="Modifier",
+    text="Modifier la partition",
     font=("Eras Demi ITC", taille_texte),
-    width=208 * multiplicateurX,
+    width=(majeurOuMineur.winfo_x() + majeurOuMineur.winfo_width() - textTonalite.winfo_x()),
     height=55 * multiplicateurY,
     image=imgModif,
     compound=tk.LEFT,
@@ -437,7 +376,7 @@ btnJouer = tk.Button(
     root,
     image=imgJouer,
     width=210 * multiplicateurX,
-    height=80 * multiplicateurY,
+    height=150 * multiplicateurY,
     command=commande_jouer
 )
 btnJouer.place(x=-100, y=-100)
@@ -456,9 +395,8 @@ btnExporter.place(x=(btnGenerer.winfo_x() + btnGenerer.winfo_width()) / 2 +
 root.update()
 format_export.place(x=btnExporter.winfo_x(),
                     y=btnGenerer.winfo_y() + btnGenerer.winfo_height() - format_export.winfo_height())
-root.update()
-modifier.place(x=btnJouer.winfo_x(),
-               y=btnGenerer.winfo_y() + btnGenerer.winfo_height() - modifier.winfo_height())
+modifier.place(x=textTitre.winfo_x(),
+               y=textTitre.winfo_y() + textTitre.winfo_height() + 75 * multiplicateurY)
 
 
 ## AFFICHAGE DE LA PARTITION
