@@ -282,6 +282,7 @@ def deplacer(path_location):
         message = ("Exportation en %s réussie!" % format_exp.upper())
     except PermissionError:
         message = "Erreur lors de l'exportation!"
+        supprimer(composition.title + "." + format_exp)
     tk.messagebox.showinfo("Statut de l'exportation", message)
 
 
