@@ -19,6 +19,7 @@ import ModificationPartition
 composition = Composition()
 partitionGeneree = False
 midi_genere = False
+en_gen = False
 partition_raw = Image
 titreComposition = ""
 
@@ -170,21 +171,24 @@ titre.place(x=duree.winfo_x() + duree.winfo_width() - titre.winfo_width(),
 ## GÉNÉRATION DE PARTITION
 # Assigne un Thread à la génération de partition, pour que l'interface ne gèle pas
 def commande_generer():
-    t = Thread(target=generer)
-    t.start()
+    if not en_gen:
+        t = Thread(target=generer)
+        t.start()
 
 
 # Génère la partition à partir de la composition générée
 def generer():
-    global partitionGeneree, titreComposition
+    global partitionGeneree, titreComposition, en_gen
     if titre.get("1.0", "end-1c") == "":
         tk.messagebox.showinfo("Attention!", "Le titre ne peut pas être vide!")
     else:
+        en_gen = True
         titreComposition = titre.get("1.0", "end-1c")
         generer_composition()
         GenerateurPartition.generer_png(composition)
         partitionGeneree = True
         rafraichir_image()
+        en_gen = False
 
 
 # Convertit la tonalité en format international, puis appelle la génération de partition
