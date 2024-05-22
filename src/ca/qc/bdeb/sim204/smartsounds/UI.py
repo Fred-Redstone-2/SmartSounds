@@ -130,7 +130,6 @@ def tonalite_change(event):
         majeurOuMineur.current(0)
     else:
         majeurOuMineur['values'] = ('Maj', 'Min')
-        majeurOuMineur.current(0)
 
 
 tonalite.bind('<<ComboboxSelected>>', tonalite_change)
@@ -396,8 +395,14 @@ modifier.place(x=textTitre.winfo_x(),
 #   https://python-forum.io/thread-7807.html
 def rafraichir_image():
     global partition_raw, label
+    exception = False
     nom_image = titreComposition + ".png"
-    partition_raw = Image.open(nom_image)
+    try:
+        partition_raw = Image.open(nom_image)
+    except FileNotFoundError:
+        exception = True
+        nom_image = titreComposition + "-page1.png"
+        partition_raw = Image.open(nom_image)
     hauteur_part = int(height - 25 * multiplicateurY)
     largeur_part = int(partition_raw.width / partition_raw.height * hauteur_part)
     partition_raw = partition_raw.resize((largeur_part, hauteur_part))
@@ -407,6 +412,8 @@ def rafraichir_image():
     label.place(x=canvas.pos_fin / 2 + root.winfo_width() / 2 - partition.width() / 2,
                 y=(height - hauteur_part) / 2 - 10 * multiplicateurY)
     supprimer(nom_image)
+    if exception:
+        supprimer(titreComposition + "-page2.png")
 
 
 label = ttk.Label(root, image=None, padding=5)
