@@ -15,6 +15,8 @@ class ProgressionAccords:
             self.tonalite = tonalite  # tonalité apparentée
             self.pivot = pivot
 
+            ProgressionAccords.conversion_tonalite(self)
+
             self.Accord = Accord.Accord(self.tonalite)
             accords = chords.triads(self.tonalite)
 
@@ -99,3 +101,7 @@ class ProgressionAccords:
                         return False
 
         return True
+
+    def conversion_tonalite(self):
+        if self.tonalite == "G#":
+            self.tonalite = "Ab"
